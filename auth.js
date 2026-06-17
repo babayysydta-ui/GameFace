@@ -639,7 +639,3 @@ window.GameFaceAuth = {
     updateAuthUI,
     hashPassword
 };
-
-
-
-
