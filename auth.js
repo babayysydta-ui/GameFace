@@ -1,5 +1,5 @@
 // ============================================================
-// auth.js - سیستم احراز هویت (نسخه ساده و پایدار)
+// auth.js - سیستم احراز هویت (نسخه کامل با تغییر نام)
 // ============================================================
 
 const JSONBIN_API_KEY = '$2a$10$xuP.N/WOhZAUMRqw3JT4LepOUGFnjnIe5YmSVmy9vl0aIbGntjhwu';
@@ -9,7 +9,7 @@ let currentUser = null;
 const loginAttempts = {};
 
 // ============================================================
-// ====== تابع ساده هش کردن (بدون crypto.subtle) ======
+// ====== تابع ساده هش کردن ======
 // ============================================================
 
 function simpleHash(str) {
@@ -17,9 +17,8 @@ function simpleHash(str) {
     for (let i = 0; i < str.length; i++) {
         const char = str.charCodeAt(i);
         hash = ((hash << 5) - hash) + char;
-        hash = hash & hash; // Convert to 32bit integer
+        hash = hash & hash;
     }
-    // تبدیل به هگزادسیمال با طول ثابت
     return Math.abs(hash).toString(16).padStart(8, '0') + 
            (hash >>> 0).toString(16).padStart(8, '0');
 }
@@ -122,7 +121,6 @@ async function registerUser(username, password) {
             return { success: false, message: '⚠️ این نام کاربری قبلاً ثبت شده است!' };
         }
         
-        // هش کردن رمز با روش ساده
         const hashedPassword = simpleHash(password);
         console.log('🔐 رمز هش شد:', hashedPassword);
         
@@ -174,12 +172,10 @@ async function loginUser(username, password) {
             return { success: false, message: '❌ نام کاربری یا رمز عبور اشتباه است!' };
         }
         
-        // هش کردن رمز وارد شده
         const hashedInput = simpleHash(password);
         console.log('🔐 رمز وارد شده هش شد:', hashedInput);
         console.log('🔐 رمز ذخیره شده:', users[username].password);
         
-        // مقایسه
         if (users[username].password !== hashedInput) {
             return { success: false, message: '❌ نام کاربری یا رمز عبور اشتباه است!' };
         }
@@ -234,6 +230,55 @@ async function changePassword(oldPassword, newPassword) {
         return { success: true, message: '✅ رمز عبور با موفقیت تغییر کرد!' };
     } catch (error) {
         console.error('Change password error:', error);
+        return { success: false, message: '❌ خطا در ارتباط با سرور!' };
+    }
+}
+
+// ============================================================
+// ====== ✅ جدید: تغییر نام کاربری ======
+// ============================================================
+
+async function changeUsername(newUsername) {
+    try {
+        const user = getCurrentUser();
+        if (!user) {
+            return { success: false, message: '❌ ابتدا وارد حساب خود شوید!' };
+        }
+        
+        if (!newUsername || newUsername.length < 3) {
+            return { success: false, message: '⚠️ نام کاربری حداقل ۳ کاراکتر باشد!' };
+        }
+        
+        // فقط حروف و اعداد
+        const safeUser = newUsername.replace(/[^a-zA-Z0-9_\u0600-\u06FF]/g, '');
+        if (safeUser !== newUsername) {
+            return { success: false, message: '⚠️ نام کاربری فقط شامل حروف و اعداد باشد!' };
+        }
+        
+        const users = await getUsers();
+        
+        // بررسی اینکه نام جدید توسط کس دیگه استفاده نشده
+        if (users[newUsername] && newUsername !== user.username) {
+            return { success: false, message: '⚠️ این نام کاربری قبلاً ثبت شده است!' };
+        }
+        
+        // انتقال داده‌ها به نام جدید
+        const userData = users[user.username];
+        delete users[user.username];
+        users[newUsername] = userData;
+        
+        const saved = await saveUsers(users);
+        if (!saved) {
+            return { success: false, message: 'خطا در تغییر نام!' };
+        }
+        
+        // به‌روزرسانی کاربر فعلی
+        user.username = newUsername;
+        setCurrentUser(user);
+        
+        return { success: true, message: '✅ نام کاربری با موفقیت تغییر کرد!' };
+    } catch (error) {
+        console.error('Change username error:', error);
         return { success: false, message: '❌ خطا در ارتباط با سرور!' };
     }
 }
@@ -499,6 +544,10 @@ function updateAuthUI() {
                         تغییر پروفایل
                     </a>
                     <a href="profile.html" class="menu-item">
+                        <span class="icon">✏️</span>
+                        تغییر نام کاربری
+                    </a>
+                    <a href="profile.html" class="menu-item">
                         <span class="icon">🔒</span>
                         تغییر رمز عبور
                     </a>
@@ -565,6 +614,7 @@ window.GameFaceAuth = {
     registerUser,
     loginUser,
     changePassword,
+    changeUsername,  // ✅ جدید
     updateProfileImage,
     compressImage,
     toggleLikeVideo,
