@@ -7,6 +7,11 @@
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="menu-style.css">
 <link rel="icon" href="https://uploadkon.ir/uploads/bde221_26574fd2be-c3db-41a9-ae44-d51c60f8c1f9.jpg">
+
+<!-- ====== Cropper.js برای برش تصویر ====== -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
 <style>
     .profile-page { padding: 40px 20px 60px; position: relative; z-index: 1; }
     .profile-container {
@@ -20,6 +25,7 @@
         display: flex; align-items: center; gap: 25px;
         padding-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.06);
         margin-bottom: 30px;
+        flex-wrap: wrap;
     }
     .profile-avatar-wrapper {
         position: relative;
@@ -117,16 +123,17 @@
     /* ====== مودال‌ها ====== */
     .modal-overlay {
         display: none; position: fixed; inset: 0;
-        background: rgba(0,0,0,0.7); backdrop-filter: blur(10px);
+        background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
         z-index: 10000; align-items: center; justify-content: center;
+        padding: 20px;
     }
     .modal-overlay.active { display: flex; }
     .modal-box {
         background: rgba(10,12,20,0.98); border-radius: 20px;
-        padding: 35px; max-width: 420px; width: 90%;
+        padding: 35px; max-width: 500px; width: 100%;
         border: 1px solid rgba(255,255,255,0.08);
         animation: fadeSlide 0.3s ease;
-        max-height: 90vh;
+        max-height: 95vh;
         overflow-y: auto;
     }
     .modal-box h3 { color: #fff; font-size: 22px; margin-bottom: 8px; }
@@ -173,7 +180,54 @@
         100% { opacity: 1; transform: translateY(0); }
     }
 
-    /* ====== بخش آپلود پروفایل ====== */
+    /* ====== بخش برش تصویر ====== */
+    .crop-container {
+        width: 100%;
+        max-height: 400px;
+        margin: 10px 0 20px;
+        background: #000;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.06);
+    }
+    .crop-container img {
+        max-width: 100%;
+        display: block;
+    }
+
+    .crop-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+    .crop-actions button {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.1);
+        background: rgba(255,255,255,0.05);
+        color: rgba(255,255,255,0.6);
+        cursor: pointer;
+        transition: 0.3s;
+        font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+        font-size: 13px;
+    }
+    .crop-actions button:hover {
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+    }
+    .crop-actions button.primary {
+        background: linear-gradient(135deg, #7c5cff, #00eaff);
+        color: #fff;
+        border-color: transparent;
+    }
+    .crop-actions button.primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 20px rgba(124,92,255,0.3);
+    }
+
+    /* ====== بخش آپلود ====== */
     .profile-upload-area {
         display: flex;
         flex-direction: column;
@@ -244,36 +298,6 @@
         display: flex;
     }
 
-    /* ====== پیشرفت آپلود ====== */
-    #uploadProgress {
-        margin-top: 10px;
-        padding: 10px;
-        background: rgba(255,255,255,0.03);
-        border-radius: 10px;
-        border: 1px solid rgba(255,255,255,0.05);
-        display: none;
-    }
-    #uploadProgress .progress-bar-bg {
-        width: 100%;
-        height: 6px;
-        background: rgba(255,255,255,0.1);
-        border-radius: 3px;
-        overflow: hidden;
-    }
-    #uploadProgress .progress-bar-fill {
-        width: 0%;
-        height: 100%;
-        background: linear-gradient(135deg, #7c5cff, #00eaff);
-        border-radius: 3px;
-        transition: width 0.3s ease;
-    }
-    #uploadProgress .progress-text {
-        color: rgba(255,255,255,0.4);
-        font-size: 12px;
-        text-align: center;
-        margin-top: 5px;
-    }
-
     .profile-image-preview {
         width: 120px;
         height: 120px;
@@ -309,12 +333,13 @@
     .home-icon:hover img { filter: brightness(0) invert(1) drop-shadow(0 0 12px #00eaff); transform: scale(1.08); }
 
     @media (max-width: 768px) {
-        .profile-header { flex-direction: column; text-align: center; }
+        .profile-header { flex-direction: column; text-align: center; justify-content: center; }
         .profile-stats { grid-template-columns: repeat(2, 1fr); }
         .profile-container { padding: 25px; }
         .home-icon img { width: 32px; height: 32px; }
         .home-icon span { font-size: 11px; }
         .modal-box { padding: 25px; }
+        .crop-container { max-height: 300px; }
     }
     @media (max-width: 480px) {
         .home-icon img { width: 28px; height: 28px; }
@@ -325,6 +350,8 @@
         .profile-stat .number { font-size: 22px; }
         .profile-image-preview, .profile-image-preview-text { width: 80px; height: 80px; font-size: 32px; }
         .modal-box { padding: 18px; }
+        .crop-container { max-height: 200px; }
+        .crop-actions button { padding: 6px 12px; font-size: 12px; }
     }
 </style>
 </head>
@@ -379,6 +406,9 @@
             <div class="profile-info">
                 <h2 id="profileUsername">کاربر</h2>
                 <p id="profileCreated">عضو از: تاریخ</p>
+                <button onclick="openEditUsernameModal()" style="background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);padding:4px 12px;border-radius:6px;cursor:pointer;font-size:12px;margin-top:5px;font-family:'Vazirmatn','Tahoma',sans-serif;">
+                    ✏️ تغییر نام کاربری
+                </button>
             </div>
         </div>
 
@@ -404,6 +434,10 @@
         <div class="profile-menu">
             <button class="menu-item" onclick="openProfileModal()">
                 <span class="icon">🖼️</span> تغییر تصویر پروفایل
+                <span class="arrow">←</span>
+            </button>
+            <button class="menu-item" onclick="openEditUsernameModal()">
+                <span class="icon">✏️</span> تغییر نام کاربری
                 <span class="arrow">←</span>
             </button>
             <button class="menu-item" onclick="openChangePassword()">
@@ -433,13 +467,13 @@
     </div>
 </section>
 
-<!-- ====== مودال تغییر پروفایل ====== -->
+<!-- ====== مودال تغییر پروفایل (با برش) ====== -->
 <div class="modal-overlay" id="profileModal">
     <div class="modal-box">
         <h3>🖼️ تغییر تصویر پروفایل</h3>
-        <p>یک تصویر از دستگاه خود انتخاب کنید.</p>
+        <p>یک تصویر انتخاب کنید، سپس برش بزنید.</p>
         
-        <div style="text-align:center;margin-bottom:20px;">
+        <div style="text-align:center;margin-bottom:15px;">
             <div class="profile-image-preview-wrapper">
                 <img id="profilePreview" src="" class="profile-image-preview" style="display:none;">
                 <div id="profilePreviewText" class="profile-image-preview-text">G</div>
@@ -447,23 +481,29 @@
             </div>
         </div>
 
-        <div class="profile-upload-area" onclick="document.getElementById('profileImageInput').click()">
-            <span class="upload-icon">📤</span>
-            <span class="upload-text">برای انتخاب تصویر کلیک کنید</span>
-            <span style="color:rgba(255,255,255,0.2);font-size:12px;">
-                ⚠️ حداکثر حجم: 2 مگابایت | فرمت: JPG, PNG
-            </span>
-            <span style="color:rgba(255,255,255,0.15);font-size:11px;margin-top:5px;">
-                (تصویر به صورت خودکار بهینه می‌شود)
-            </span>
-            <input type="file" id="profileImageInput" accept="image/png,image/jpeg,image/jpg" style="display:none;" onchange="handleProfileImage(event)">
+        <!-- ====== بخش برش تصویر ====== -->
+        <div id="cropSection" style="display:none;">
+            <div class="crop-container">
+                <img id="cropImage" src="">
+            </div>
+            <div class="crop-actions">
+                <button onclick="rotateImage(-90)">🔄 چرخش چپ</button>
+                <button onclick="rotateImage(90)">🔄 چرخش راست</button>
+                <button onclick="resetCrop()">↩️ ریست</button>
+                <button class="primary" onclick="applyCrop()">✅ اعمال برش</button>
+            </div>
         </div>
 
-        <div id="uploadProgress">
-            <div class="progress-bar-bg">
-                <div class="progress-bar-fill" id="progressBar"></div>
+        <!-- ====== بخش آپلود ====== -->
+        <div id="uploadSection">
+            <div class="profile-upload-area" onclick="document.getElementById('profileImageInput').click()">
+                <span class="upload-icon">📤</span>
+                <span class="upload-text">برای انتخاب تصویر کلیک کنید</span>
+                <span style="color:rgba(255,255,255,0.2);font-size:12px;">
+                    ⚠️ حداکثر حجم: 2 مگابایت | فرمت: JPG, PNG
+                </span>
+                <input type="file" id="profileImageInput" accept="image/png,image/jpeg,image/jpg" style="display:none;" onchange="handleProfileImage(event)">
             </div>
-            <div class="progress-text" id="progressText">در حال بارگذاری...</div>
         </div>
 
         <div id="profileMessage" style="font-size:14px;margin-top:10px;display:none;text-align:center;"></div>
@@ -471,6 +511,25 @@
         <div class="modal-actions">
             <button class="btn-secondary" onclick="closeProfileModal()">انصراف</button>
             <button class="btn-primary" id="saveProfileBtn" onclick="saveProfileImage()">💾 ذخیره</button>
+        </div>
+    </div>
+</div>
+
+<!-- ====== مودال تغییر نام کاربری ====== -->
+<div class="modal-overlay" id="editUsernameModal">
+    <div class="modal-box">
+        <h3>✏️ تغییر نام کاربری</h3>
+        <p>نام کاربری جدید خود را وارد کنید.</p>
+        
+        <div class="input-wrap">
+            <input type="text" id="newUsername" placeholder="نام کاربری جدید" maxlength="30">
+        </div>
+
+        <div id="usernameMessage" style="font-size:14px;margin-top:10px;display:none;text-align:center;"></div>
+
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="closeEditUsernameModal()">انصراف</button>
+            <button class="btn-primary" onclick="saveUsername()">💾 ذخیره</button>
         </div>
     </div>
 </div>
@@ -484,7 +543,7 @@
             <input type="password" id="oldPass" placeholder="رمز عبور فعلی">
         </div>
         <div class="input-wrap">
-            <input type="password" id="newPass" placeholder="رمز عبور جدید">
+            <input type="password" id="newPass" placeholder="رمز عبور جدید (حداقل ۴ کاراکتر)">
         </div>
         <div class="input-wrap">
             <input type="password" id="newPass2" placeholder="تکرار رمز جدید">
@@ -541,6 +600,8 @@
 // ============================================================
 
 let selectedImage = null;
+let cropper = null;
+let croppedImage = null;
 
 // ============================================================
 // ====== همبرگر ======
@@ -566,7 +627,6 @@ function loadProfile() {
     document.getElementById('profileUsername').textContent = user.username;
     document.getElementById('profileCreated').textContent = 'عضو از: ' + (user.created || 'تاریخ نامشخص');
     
-    // نمایش تصویر پروفایل
     if (user.profileImage && user.profileImage.startsWith('data:image')) {
         document.getElementById('profileAvatar').src = user.profileImage;
         document.getElementById('profileAvatar').style.display = 'block';
@@ -590,7 +650,52 @@ function loadProfile() {
 }
 
 // ============================================================
-// ====== تغییر تصویر پروفایل ======
+// ====== تغییر نام کاربری ======
+// ============================================================
+
+function openEditUsernameModal() {
+    document.getElementById('editUsernameModal').classList.add('active');
+    document.getElementById('newUsername').value = '';
+    document.getElementById('usernameMessage').style.display = 'none';
+}
+
+function closeEditUsernameModal() {
+    document.getElementById('editUsernameModal').classList.remove('active');
+}
+
+async function saveUsername() {
+    const newUsername = document.getElementById('newUsername').value.trim();
+    const msg = document.getElementById('usernameMessage');
+    
+    if (!newUsername || newUsername.length < 3) {
+        msg.textContent = '⚠️ نام کاربری حداقل ۳ کاراکتر باشد!';
+        msg.style.color = '#ff6b6b';
+        msg.style.display = 'block';
+        return;
+    }
+    
+    const user = GameFaceAuth.getCurrentUser();
+    if (!user) return;
+    
+    const result = await GameFaceAuth.changeUsername(newUsername);
+    
+    if (result.success) {
+        msg.textContent = '✅ ' + result.message;
+        msg.style.color = '#00e676';
+        msg.style.display = 'block';
+        setTimeout(() => {
+            closeEditUsernameModal();
+            loadProfile();
+        }, 1500);
+    } else {
+        msg.textContent = '❌ ' + result.message;
+        msg.style.color = '#ff6b6b';
+        msg.style.display = 'block';
+    }
+}
+
+// ============================================================
+// ====== تصویر پروفایل با برش ======
 // ============================================================
 
 function openProfileModal() {
@@ -599,10 +704,11 @@ function openProfileModal() {
     
     document.getElementById('profileModal').classList.add('active');
     document.getElementById('profileMessage').style.display = 'none';
-    document.getElementById('uploadProgress').style.display = 'none';
+    document.getElementById('cropSection').style.display = 'none';
+    document.getElementById('uploadSection').style.display = 'block';
     selectedImage = null;
+    croppedImage = null;
     
-    // نمایش تصویر فعلی در پیش‌نمایش
     if (user.profileImage && user.profileImage.startsWith('data:image')) {
         document.getElementById('profilePreview').src = user.profileImage;
         document.getElementById('profilePreview').style.display = 'block';
@@ -621,85 +727,123 @@ function openProfileModal() {
 function closeProfileModal() {
     document.getElementById('profileModal').classList.remove('active');
     document.getElementById('profileImageInput').value = '';
-    document.getElementById('uploadProgress').style.display = 'none';
+    document.getElementById('cropSection').style.display = 'none';
+    document.getElementById('uploadSection').style.display = 'block';
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
     selectedImage = null;
+    croppedImage = null;
 }
 
-// ====== هندل کردن انتخاب تصویر ======
 function handleProfileImage(event) {
     const file = event.target.files[0];
     if (!file) return;
     
     const msg = document.getElementById('profileMessage');
-    msg.style.display = 'block';
     
-    // بررسی حجم فایل (حداکثر 2 مگابایت)
     if (file.size > 2 * 1024 * 1024) {
-        msg.textContent = '⚠️ حجم تصویر باید کمتر از 2 مگابایت باشد! (حجم فعلی: ' + (file.size / (1024 * 1024)).toFixed(1) + 'MB)';
+        msg.textContent = '⚠️ حجم تصویر باید کمتر از 2 مگابایت باشد!';
         msg.style.color = '#ff6b6b';
+        msg.style.display = 'block';
         document.getElementById('profileImageInput').value = '';
         return;
     }
     
-    // بررسی نوع فایل
     if (!file.type.startsWith('image/')) {
         msg.textContent = '⚠️ لطفاً فقط تصویر انتخاب کنید!';
         msg.style.color = '#ff6b6b';
+        msg.style.display = 'block';
         document.getElementById('profileImageInput').value = '';
         return;
     }
     
-    // نمایش پیشرفت
-    document.getElementById('uploadProgress').style.display = 'block';
-    document.getElementById('progressBar').style.width = '30%';
-    document.getElementById('progressText').textContent = '📤 در حال بارگذاری...';
-    msg.style.display = 'none';
-    
     const reader = new FileReader();
     reader.onload = function(e) {
-        document.getElementById('progressBar').style.width = '70%';
-        document.getElementById('progressText').textContent = '🔄 در حال بهینه‌سازی...';
-        
         selectedImage = e.target.result;
         
-        // نمایش پیش‌نمایش
-        document.getElementById('profilePreview').src = selectedImage;
-        document.getElementById('profilePreview').style.display = 'block';
-        document.getElementById('profilePreviewText').style.display = 'none';
-        document.getElementById('removeImageBtn').classList.add('show');
+        // نمایش در کراپر
+        document.getElementById('cropImage').src = selectedImage;
+        document.getElementById('cropSection').style.display = 'block';
+        document.getElementById('uploadSection').style.display = 'none';
         
-        document.getElementById('progressBar').style.width = '100%';
-        document.getElementById('progressText').textContent = '✅ آماده ذخیره!';
+        // راه‌اندازی Cropper
+        if (cropper) {
+            cropper.destroy();
+        }
         
-        setTimeout(() => {
-            document.getElementById('uploadProgress').style.display = 'none';
-        }, 500);
+        const image = document.getElementById('cropImage');
+        cropper = new Cropper(image, {
+            aspectRatio: 1,
+            viewMode: 1,
+            dragMode: 'move',
+            autoCropArea: 0.8,
+            restore: false,
+            guides: true,
+            center: true,
+            highlight: false,
+            cropBoxMovable: true,
+            cropBoxResizable: true,
+            toggleDragModeOnDblclick: false,
+            responsive: true,
+            background: false,
+        });
         
-        msg.textContent = '✅ تصویر با موفقیت بارگذاری شد!';
+        msg.textContent = '✅ تصویر انتخاب شد! لطفاً برش بزنید.';
         msg.style.color = '#00e676';
         msg.style.display = 'block';
     };
-    
-    reader.onerror = function() {
-        msg.textContent = '❌ خطا در خواندن فایل!';
-        msg.style.color = '#ff6b6b';
-        msg.style.display = 'block';
-        document.getElementById('uploadProgress').style.display = 'none';
-    };
-    
     reader.readAsDataURL(file);
 }
 
-// ====== حذف تصویر ======
+function rotateImage(degree) {
+    if (cropper) {
+        cropper.rotate(degree);
+    }
+}
+
+function resetCrop() {
+    if (cropper) {
+        cropper.reset();
+    }
+}
+
+function applyCrop() {
+    if (!cropper) return;
+    
+    const canvas = cropper.getCroppedCanvas({
+        width: 300,
+        height: 300,
+    });
+    
+    croppedImage = canvas.toDataURL('image/jpeg', 0.8);
+    
+    // نمایش پیش‌نمایش
+    document.getElementById('profilePreview').src = croppedImage;
+    document.getElementById('profilePreview').style.display = 'block';
+    document.getElementById('profilePreviewText').style.display = 'none';
+    document.getElementById('removeImageBtn').classList.add('show');
+    document.getElementById('cropSection').style.display = 'none';
+    document.getElementById('uploadSection').style.display = 'block';
+    
+    const msg = document.getElementById('profileMessage');
+    msg.textContent = '✅ برش اعمال شد! حالا روی ذخیره کلیک کنید.';
+    msg.style.color = '#00e676';
+    msg.style.display = 'block';
+}
+
 function removeProfileImage() {
     selectedImage = null;
+    croppedImage = null;
     const user = GameFaceAuth.getCurrentUser();
     document.getElementById('profilePreview').style.display = 'none';
     document.getElementById('profilePreviewText').style.display = 'flex';
     document.getElementById('profilePreviewText').textContent = user.username.charAt(0).toUpperCase();
     document.getElementById('removeImageBtn').classList.remove('show');
     document.getElementById('profileImageInput').value = '';
-    document.getElementById('uploadProgress').style.display = 'none';
+    document.getElementById('cropSection').style.display = 'none';
+    document.getElementById('uploadSection').style.display = 'block';
     
     const msg = document.getElementById('profileMessage');
     msg.textContent = '🗑️ تصویر حذف شد!';
@@ -707,7 +851,6 @@ function removeProfileImage() {
     msg.style.display = 'block';
 }
 
-// ====== ذخیره تصویر ======
 async function saveProfileImage() {
     const user = GameFaceAuth.getCurrentUser();
     if (!user) return;
@@ -715,9 +858,10 @@ async function saveProfileImage() {
     const btn = document.getElementById('saveProfileBtn');
     const msg = document.getElementById('profileMessage');
     
-    // اگر تصویری انتخاب نشده و تصویر قبلی هم وجود ندارد
-    if (!selectedImage && !user.profileImage) {
-        msg.textContent = '⚠️ لطفاً یک تصویر انتخاب کنید!';
+    let imageToSave = croppedImage || selectedImage;
+    
+    if (!imageToSave && !user.profileImage) {
+        msg.textContent = '⚠️ لطفاً یک تصویر انتخاب و برش بزنید!';
         msg.style.color = '#ff6b6b';
         msg.style.display = 'block';
         return;
@@ -728,7 +872,6 @@ async function saveProfileImage() {
     msg.style.display = 'none';
     
     try {
-        let imageToSave = selectedImage;
         if (!imageToSave) {
             imageToSave = user.profileImage || '';
         }
@@ -752,7 +895,7 @@ async function saveProfileImage() {
         }
     } catch (error) {
         console.error('Save error:', error);
-        msg.textContent = '❌ خطا در ذخیره! لطفاً دوباره تلاش کنید.';
+        msg.textContent = '❌ خطا در ذخیره!';
         msg.style.color = '#ff6b6b';
         msg.style.display = 'block';
     }
@@ -762,7 +905,7 @@ async function saveProfileImage() {
 }
 
 // ============================================================
-// ====== تغییر رمز عبور ======
+// ====== تغییر رمز ======
 // ============================================================
 
 function openChangePassword() {
@@ -853,7 +996,7 @@ function viewDownloadedVideos() {
 }
 
 // ============================================================
-// ====== بازگشت به بالا ======
+// ====== بازگشت ======
 // ============================================================
 
 const backBtn = document.getElementById('backToTop');
