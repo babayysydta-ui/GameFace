@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جزئیات مود | GameFace</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="menu-style.css">
+<link rel="icon" href="https://uploadkon.ir/uploads/bde221_26574fd2be-c3db-41a9-ae44-d51c60f8c1f9.jpg">
+<style>
+    .mod-detail-page {
+        padding: 40px 20px 60px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .mod-detail-container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: linear-gradient(145deg, rgba(20,22,32,0.96), rgba(10,12,20,0.96));
+        border-radius: 24px;
+        padding: 40px;
+        border: 1px solid rgba(255,255,255,0.06);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    .mod-detail-container img {
+        width: 100%;
+        border-radius: 16px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        margin-bottom: 25px;
+    }
+
+    .mod-detail-container .mod-title {
+        font-size: 28px;
+        color: #fff;
+        margin-bottom: 8px;
+        font-family: 'Rajdhani', 'Vazirmatn', sans-serif;
+    }
+
+    .mod-detail-container .mod-game-name {
+        color: rgba(255,255,255,0.4);
+        font-size: 16px;
+        margin-bottom: 15px;
+    }
+
+    .mod-detail-container .mod-description {
+        color: rgba(255,255,255,0.7);
+        font-size: 16px;
+        line-height: 2;
+        margin-bottom: 25px;
+        padding: 20px;
+        background: rgba(255,255,255,0.03);
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .mod-detail-container .mod-features {
+        margin-bottom: 25px;
+    }
+
+    .mod-detail-container .mod-features h4 {
+        color: #fff;
+        font-size: 18px;
+        margin-bottom: 12px;
+        font-family: 'Rajdhani', 'Vazirmatn', sans-serif;
+    }
+
+    .mod-detail-container .mod-features ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .mod-detail-container .mod-features ul li {
+        color: rgba(255,255,255,0.6);
+        padding: 8px 0;
+        padding-right: 25px;
+        position: relative;
+        font-size: 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .mod-detail-container .mod-features ul li::before {
+        content: '✅';
+        position: absolute;
+        right: 0;
+        top: 8px;
+    }
+
+    .download-section {
+        background: linear-gradient(135deg, rgba(124,92,255,0.1), rgba(0,234,255,0.05));
+        border-radius: 16px;
+        padding: 25px 30px;
+        border: 1px solid rgba(124,92,255,0.15);
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .download-section .download-info {
+        flex: 1;
+    }
+
+    .download-section .download-info h4 {
+        color: #fff;
+        font-size: 18px;
+        margin-bottom: 4px;
+    }
+
+    .download-section .download-info p {
+        color: rgba(255,255,255,0.4);
+        font-size: 14px;
+    }
+
+    .download-btn-large {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 35px;
+        background: linear-gradient(135deg, #00c853, #00e676);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 18px;
+        cursor: pointer;
+        transition: 0.3s;
+        text-decoration: none;
+        font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+    }
+
+    .download-btn-large:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 40px rgba(0,200,83,0.4);
+    }
+
+    .download-btn-large svg {
+        width: 24px;
+        height: 24px;
+        fill: currentColor;
+    }
+
+    .back-to-mods {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: rgba(255,255,255,0.5);
+        text-decoration: none;
+        transition: 0.3s;
+        margin-bottom: 20px;
+        font-size: 15px;
+    }
+
+    .back-to-mods:hover {
+        color: #00eaff;
+    }
+
+    /* ====== استایل منو ====== */
+    .home-icon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        color: rgba(255,255,255,0.8);
+        transition: 0.3s;
+        gap: 4px;
+        text-decoration: none;
+    }
+    .home-icon img {
+        width: 44px;
+        height: 44px;
+        filter: brightness(0) invert(1);
+        transition: 0.3s;
+        object-fit: contain;
+    }
+    .home-icon span {
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.4;
+        font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+    }
+    .home-icon:hover {
+        color: #00eaff;
+        transform: translateY(-3px);
+    }
+    .home-icon:hover img {
+        filter: brightness(0) invert(1) drop-shadow(0 0 12px #00eaff);
+        transform: scale(1.08);
+    }
+
+    @media (max-width: 768px) {
+        .mod-detail-container {
+            padding: 25px;
+        }
+        .mod-detail-container .mod-title {
+            font-size: 22px;
+        }
+        .download-section {
+            flex-direction: column;
+            text-align: center;
+        }
+        .download-btn-large {
+            width: 100%;
+            justify-content: center;
+        }
+        .home-icon img {
+            width: 32px;
+            height: 32px;
+        }
+        .home-icon span {
+            font-size: 11px;
+        }
+    }
+    @media (max-width: 480px) {
+        .home-icon img {
+            width: 28px;
+            height: 28px;
+        }
+        .home-icon span {
+            font-size: 10px;
+        }
+        .mod-detail-container {
+            padding: 18px;
+        }
+        .mod-detail-container .mod-title {
+            font-size: 20px;
+        }
+        .download-btn-large {
+            padding: 14px 20px;
+            font-size: 15px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<!-- پارتیکل -->
+<canvas id="particlesCanvas"></canvas>
+
+<!-- ====== نوار بالایی ====== -->
+<div class="top-mini-bar">
+    <div class="container mini-bar-flex">
+        <div class="right-links">
+            <a href="news.html">📰 اخبار</a>
+            <a href="contact.html">📞 ارتباط با ما</a>
+        </div>
+        <div class="left-links" id="authLinks">
+            <a href="vrood.html" class="auth-link">🔐 ورود / ثبت‌نام</a>
+        </div>
+    </div>
+</div>
+
+<!-- ====== هدر ====== -->
+<header class="main-header">
+    <div class="container header-grid">
+        <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+        <div class="header-right">
+            <img src="https://uploadkon.ir/uploads/b57321_26-2147483648-210097.jpg" class="top-banner-logo hover-scale" alt="Logo">
+        </div>
+        <nav class="icon-menu" id="mainMenu">
+            <a href="index.html" class="home-icon">
+                <img src="https://uploadkon.ir/uploads/862016_26ChatGPT-Image-۲۷-خرداد-۱۴۰۵،-۰۱-۴۴-۲۱.png" alt="خانه">
+                <span>خانه</span>
+            </a>
+        </nav>
+        <div class="logo-section">
+            <span class="logo-text">𝐆𝐚𝐦𝐞𝐅𝐚𝐜𝐞</span>
+            <img src="https://uploadkon.ir/uploads/bde221_26574fd2be-c3db-41a9-ae44-d51c60f8c1f9.jpg" class="hover-scale" alt="Logo">
+        </div>
+    </div>
+</header>
+
+<!-- ====== جزئیات مود ====== -->
+<section class="mod-detail-page">
+    <div class="container">
+        <a href="mod-farsi.html" class="back-to-mods">← بازگشت به لیست مودها</a>
+        
+        <div class="mod-detail-container" id="modDetail">
+            <img id="modImage" src="" alt="مود">
+            <h1 class="mod-title" id="modTitle">عنوان مود</h1>
+            <p class="mod-game-name" id="modGame">نام بازی</p>
+            <div class="mod-description" id="modDesc">
+                توضیحات کامل مود
+            </div>
+            
+            <div class="mod-features">
+                <h4>✨ ویژگی‌های مود</h4>
+                <ul id="modFeatures">
+                    <li>دوبله کامل فارسی</li>
+                    <li>کیفیت صدای بالا</li>
+                    <li>هماهنگی کامل با بازی</li>
+                    <li>نصب آسان</li>
+                </ul>
+            </div>
+
+            <div class="download-section">
+                <div class="download-info">
+                    <h4>⬇️ دانلود مود</h4>
+                    <p>نسخه کامل مود دوبله فارسی را دانلود کنید</p>
+                </div>
+                <a href="#" class="download-btn-large" id="downloadBtn">
+                    <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                    دانلود مود
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ====== فوتر ====== -->
+<footer class="site-footer scroll-animate">
+    <div class="container footer-grid">
+        <div class="footer-box">
+            <h3>🎮 GameFace</h3>
+            <p>تیم دوبله گیمینگ با محتوای فارسی برای بازی‌های مختلف</p>
+            <div class="footer-social">
+                <a href="https://rubika.ir/GameFace" target="_blank" aria-label="روبیکا">📱</a>
+                <a href="https://www.aparat.com/c_tyu" target="_blank" aria-label="آپارات">🎬</a>
+            </div>
+        </div>
+        <div class="footer-box">
+            <h3>⚡ لینک‌های سریع</h3>
+            <ul>
+                <li><a href="index.html">🏠 صفحه اصلی</a></li>
+                <li><a href="video-dobleh.html">🎬 ویدیوهای دوبله</a></li>
+                <li><a href="mod-farsi.html">⬇️ مودهای بازی</a></li>
+                <li><a href="news.html">📰 اخبار</a></li>
+                <li><a href="contact.html">📞 ارتباط با ما</a></li>
+            </ul>
+        </div>
+        <div class="footer-box">
+            <h3>📱 کانال روبیکا</h3>
+            <p>عضو شو و جدیدترین‌ها رو ببین</p>
+            <a href="https://rubika.ir/GameFace" class="rubika-btn" target="_blank">🚀 عضویت</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2026 <span>GameFace</span> - تمام حقوق محفوظ است.</p>
+    </div>
+</footer>
+
+<!-- ====== دکمه بازگشت ====== -->
+<button id="backToTop">↑</button>
+
+<script src="auth.js"></script>
+<script src="loader.js"></script>
+
+<script>
+// ============================================================
+// ====== داده‌های مودها ======
+// ============================================================
+
+const modsData = {
+    'mod1': {
+        title: '🎮 مود دوبله فارسی TMNT',
+        game: 'Teenage Mutant Ninja Turtles: Mutants in Manhattan',
+        image: 'https://static.cdn.asset.aparat.com/avt/35128166-7383-l__4570.jpg?width=900&quality=90&secret=1eN3Tsq0tRw-ML4vl2DDQQ',
+        description: 'دوبله کامل داستان بازی Teenage Mutant Ninja Turtles: Mutants in Manhattan با صدای فارسی و کیفیت بالا. این مود شامل دوبله تمام دیالوگ‌ها، صحنه‌های سینمایی و مکالمات درون بازی است.',
+        features: ['دوبله کامل داستان اصلی', 'کیفیت صدای استودیویی', 'هماهنگی کامل با لب‌ها', 'نصب آسان و سریع'],
+        download: '#'
+    },
+    'mod2': {
+        title: '🎮 مود دوبله فارسی GTA V',
+        game: 'Grand Theft Auto V',
+        image: 'https://media-rockstargames-com.akamaized.net/tina-uploads/posts/172872k8a375k8/c1964d6dfe37619793cf9eb073deff3d0719fe00.jpg',
+        description: 'دوبله کامل داستان اصلی بازی GTA V با صدای فارسی حرفه‌ای. تمام دیالوگ‌های مایکل، فرانکلین و ترور با بهترین کیفیت دوبله شده است.',
+        features: ['دوبله کامل داستان اصلی', 'صدای حرفه‌ای برای شخصیت‌ها', 'کیفیت Full HD', 'هماهنگی کامل با بازی'],
+        download: '#'
+    },
+    'mod3': {
+        title: '🎮 مود دوبله فارسی RDR2',
+        game: 'Red Dead Redemption 2',
+        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTc9xIjV8CP6ocff44koJ3NMDgPLzLxNqJWuQ&s',
+        description: 'دوبله کامل داستان آرتور مورگان در بازی Red Dead Redemption 2. این مود شامل دوبله تمام فصل‌های بازی با کیفیت صدای استودیویی است.',
+        features: ['دوبله کامل داستان آرتور مورگان', 'کیفیت صدای سینمایی', 'هماهنگی با تمام فصل‌ها', 'نصب آسان'],
+        download: '#'
+    },
+    'mod4': {
+        title: '🎮 مود دوبله فارسی RDR1',
+        game: 'Red Dead Redemption 1',
+        image: 'https://uploadkon.ir/uploads/716a21_265.jpg',
+        description: 'دوبله کامل داستان جان مارستون در بازی Red Dead Redemption 1. تجربه‌ای جدید از بازی کلاسیک با صدای فارسی.',
+        features: ['دوبله کامل داستان جان مارستون', 'کیفیت صدای حرفه‌ای', 'هماهنگی کامل با بازی', 'نصب سریع'],
+        download: '#'
+    },
+    'mod5': {
+        title: '🎮 مود دوبله فارسی جدید',
+        game: 'به زودی...',
+        image: 'https://uploadkon.ir/uploads/bde221_26574fd2be-c3db-41a9-ae44-d51c60f8c1f9.jpg',
+        description: 'مود دوبله فارسی جدید در حال ساخت است. به زودی اطلاعات کامل منتشر خواهد شد.',
+        features: ['در حال توسعه', 'به زودی'],
+        download: '#'
+    }
+};
+
+// ============================================================
+// ====== بارگذاری جزئیات مود ======
+// ============================================================
+
+function loadModDetail() {
+    const modId = localStorage.getItem('gameface_current_mod') || 'mod1';
+    const mod = modsData[modId];
+
+    if (!mod) {
+        document.getElementById('modTitle').textContent = 'مود پیدا نشد!';
+        return;
+    }
+
+    document.getElementById('modImage').src = mod.image;
+    document.getElementById('modTitle').textContent = mod.title;
+    document.getElementById('modGame').textContent = mod.game;
+    document.getElementById('modDesc').textContent = mod.description;
+
+    // ویژگی‌ها
+    const featuresList = document.getElementById('modFeatures');
+    featuresList.innerHTML = '';
+    mod.features.forEach(feature => {
+        const li = document.createElement('li');
+        li.textContent = feature;
+        featuresList.appendChild(li);
+    });
+
+    // دکمه دانلود
+    document.getElementById('downloadBtn').href = mod.download;
+}
+
+// ============================================================
+// ====== توابع ======
+// ============================================================
+
+// همبرگر
+document.getElementById('hamburgerBtn').addEventListener('click', function() {
+    document.getElementById('mainMenu').classList.toggle('open');
+});
+
+// بازگشت
+const backBtn = document.getElementById('backToTop');
+window.addEventListener('scroll', () => {
+    backBtn.style.display = window.scrollY > 400 ? 'flex' : 'none';
+});
+backBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// پارتیکل
+const canvas = document.getElementById('particlesCanvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resizeCanvas() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const particles = [];
+for (let i = 0; i < 25; i++) {
+    particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        size: Math.random() * 1.8 + 0.3,
+        speedX: (Math.random() - 0.5) * 0.3,
+        speedY: (Math.random() - 0.5) * 0.3,
+        hue: 220 + Math.random() * 60
+    });
+}
+
+function drawParticles() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        if (p.x < 0 || p.x > W) p.speedX *= -1;
+        if (p.y < 0 || p.y > H) p.speedY *= -1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, 0.2)`;
+        ctx.shadowColor = `hsla(${p.hue}, 80%, 60%, 0.08)`;
+        ctx.shadowBlur = 6;
+        ctx.fill();
+    });
+    requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+// ====== بارگذاری ======
+loadModDetail();
+GameFaceAuth.updateAuthUI();
+
+console.log('📦 Mod detail loaded!');
+</script>
+
+</body>
+</html>

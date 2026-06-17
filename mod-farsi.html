@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مودهای فارسی | GameFace</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="menu-style.css">
+<link rel="icon" href="https://uploadkon.ir/uploads/bde221_26574fd2be-c3db-41a9-ae44-d51c60f8c1f9.jpg">
+<style>
+    /* ====== جستجوی حرفه‌ای ====== */
+    .search-wrapper {
+        position: relative;
+        flex: 1;
+        min-width: 200px;
+        max-width: 400px;
+    }
+    .search-wrapper input {
+        width: 100%;
+        padding: 12px 45px 12px 18px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.04);
+        color: #fff;
+        font-size: 14px;
+        transition: 0.3s;
+        font-family: inherit;
+    }
+    .search-wrapper input:focus {
+        outline: none;
+        border-color: #7c5cff;
+        background: rgba(255,255,255,0.06);
+        box-shadow: 0 0 20px rgba(124,92,255,0.1);
+    }
+    .search-wrapper input::placeholder {
+        color: rgba(255,255,255,0.25);
+    }
+    .search-wrapper .search-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255,255,255,0.2);
+        font-size: 18px;
+        pointer-events: none;
+    }
+    .search-wrapper .clear-btn {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: rgba(255,255,255,0.2);
+        cursor: pointer;
+        font-size: 18px;
+        display: none;
+        transition: 0.3s;
+        padding: 5px;
+    }
+    .search-wrapper .clear-btn:hover {
+        color: #ff6b6b;
+    }
+    .search-wrapper .clear-btn.visible {
+        display: block;
+    }
+
+    .search-stats {
+        display: none;
+        padding: 10px 0 5px;
+        font-size: 14px;
+        color: rgba(255,255,255,0.4);
+        text-align: center;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        margin-bottom: 15px;
+    }
+    .search-stats.visible {
+        display: block;
+    }
+    .search-stats span {
+        color: #00eaff;
+        font-weight: 700;
+    }
+
+    .no-result {
+        display: none;
+        text-align: center;
+        padding: 60px 20px;
+        color: rgba(255,255,255,0.3);
+    }
+    .no-result.visible {
+        display: block;
+    }
+    .no-result .icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+        opacity: 0.5;
+    }
+    .no-result h3 {
+        color: rgba(255,255,255,0.5);
+        margin-bottom: 8px;
+        font-size: 20px;
+    }
+    .no-result p {
+        font-size: 14px;
+        color: rgba(255,255,255,0.25);
+    }
+
+    .mod-card.hidden {
+        display: none;
+    }
+    .mod-card.matched {
+        animation: cardMatch 0.4s ease;
+    }
+    @keyframes cardMatch {
+        0% { transform: scale(0.95); opacity: 0.5; }
+        50% { transform: scale(1.02); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    .mod-tools {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        align-items: center;
+        padding: 20px 0;
+    }
+    .mod-tools .filters {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .mod-tools .filter-btn {
+        padding: 8px 18px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.06);
+        background: rgba(255,255,255,0.04);
+        color: rgba(255,255,255,0.5);
+        cursor: pointer;
+        transition: 0.3s;
+        font-size: 13px;
+        font-weight: 600;
+    }
+    .mod-tools .filter-btn:hover {
+        background: rgba(255,255,255,0.08);
+        color: #fff;
+    }
+    .mod-tools .filter-btn.active {
+        background: linear-gradient(135deg, #7c5cff, #00eaff);
+        color: #fff;
+        border-color: transparent;
+        box-shadow: 0 0 20px rgba(124,92,255,0.15);
+    }
+
+    .scroll-animate {
+        opacity: 0;
+        transform: translateY(25px);
+        transition: all 0.5s ease;
+    }
+    .scroll-animate.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .stagger-grid .stagger-item {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.4s ease;
+    }
+    .stagger-grid .stagger-item.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .stagger-grid .stagger-item:nth-child(1) { transition-delay: 0.05s; }
+    .stagger-grid .stagger-item:nth-child(2) { transition-delay: 0.08s; }
+    .stagger-grid .stagger-item:nth-child(3) { transition-delay: 0.11s; }
+    .stagger-grid .stagger-item:nth-child(4) { transition-delay: 0.14s; }
+
+    .mod-hero {
+        padding: 40px 0;
+        text-align: center;
+    }
+    .mod-hero h1 {
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+    .mod-hero p {
+        color: rgba(255,255,255,0.6);
+        font-size: 16px;
+    }
+
+    /* ====== کارت مود ====== */
+    .mod-card {
+        background: linear-gradient(145deg, rgba(20,22,32,0.95), rgba(10,12,20,0.95));
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.06);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: #fff;
+        display: block;
+        cursor: pointer;
+    }
+    .mod-card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(124,92,255,0.3);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .mod-card img {
+        width: 100%;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        display: block;
+    }
+    .mod-card .mod-info {
+        padding: 20px;
+    }
+    .mod-card .mod-info h4 {
+        font-size: 18px;
+        margin-bottom: 6px;
+        color: #fff;
+    }
+    .mod-card .mod-info .mod-game {
+        color: rgba(255,255,255,0.4);
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    .mod-card .mod-info .mod-desc {
+        color: rgba(255,255,255,0.5);
+        font-size: 14px;
+        line-height: 1.8;
+        margin-bottom: 12px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .mod-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+    .mod-badge.gta {
+        background: rgba(255, 60, 60, 0.2);
+        color: #ff6b6b;
+    }
+    .mod-badge.rdr {
+        background: rgba(60, 180, 255, 0.2);
+        color: #4dabf7;
+    }
+    .mod-badge.other {
+        background: rgba(255, 200, 0, 0.2);
+        color: #ffd700;
+    }
+    .mods-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+        padding: 20px 0 50px;
+    }
+
+    /* ====== دکمه لایک برای مود ====== */
+    .like-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.1);
+        background: rgba(255,255,255,0.04);
+        color: rgba(255,255,255,0.5);
+        cursor: pointer;
+        transition: 0.3s;
+        font-size: 14px;
+        font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+        font-weight: 600;
+        position: relative;
+        z-index: 10;
+    }
+    .like-btn:hover {
+        background: rgba(255,255,255,0.08);
+        color: #fff;
+    }
+    .like-btn.liked {
+        color: #ff6b6b;
+        border-color: rgba(255,107,107,0.3);
+        background: rgba(255,107,107,0.1);
+    }
+    .like-btn.liked:hover {
+        background: rgba(255,107,107,0.15);
+    }
+    .like-btn .heart {
+        font-size: 18px;
+    }
+    .like-btn .like-count {
+        font-size: 13px;
+        opacity: 0.7;
+    }
+
+    .mod-card .card-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 0 20px 20px;
+        margin-top: -5px;
+    }
+
+    /* ====== دکمه مشاهده ====== */
+    .view-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 24px;
+        background: linear-gradient(135deg, #7c5cff, #00eaff);
+        color: #fff;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 14px;
+        transition: 0.3s;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+        flex: 1;
+        justify-content: center;
+        position: relative;
+        z-index: 10;
+    }
+    .view-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 30px rgba(124,92,255,0.3);
+    }
+
+    /* ====== استایل منو ====== */
+    .home-icon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        color: rgba(255,255,255,0.8);
+        transition: 0.3s;
+        gap: 4px;
+        text-decoration: none;
+    }
+    .home-icon img {
+        width: 44px;
+        height: 44px;
+        filter: brightness(0) invert(1);
+        transition: 0.3s;
+        object-fit: contain;
+    }
+    .home-icon span {
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.4;
+        font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+    }
+    .home-icon:hover {
+        color: #00eaff;
+        transform: translateY(-3px);
+    }
+    .home-icon:hover img {
+        filter: brightness(0) invert(1) drop-shadow(0 0 12px #00eaff);
+        transform: scale(1.08);
+    }
+
+    /* پیام‌ها */
+    .login-toast {
+        position: fixed;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(10,12,20,0.95);
+        backdrop-filter: blur(20px);
+        padding: 16px 30px;
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.08);
+        color: #fff;
+        font-size: 15px;
+        font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+        z-index: 9999;
+        display: none;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        animation: fadeSlide 0.3s ease;
+    }
+    .login-toast.show {
+        display: block;
+    }
+    .login-toast a {
+        color: #00eaff;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+    .like-toast {
+        position: fixed;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(10,12,20,0.95);
+        backdrop-filter: blur(20px);
+        padding: 16px 30px;
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.08);
+        color: #fff;
+        font-size: 15px;
+        font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+        z-index: 9999;
+        display: none;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        animation: fadeSlide 0.3s ease;
+    }
+    .like-toast.show {
+        display: block;
+    }
+
+    @keyframes fadeSlide {
+        0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+        100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+        .search-wrapper {
+            max-width: 100%;
+            width: 100%;
+        }
+        .mod-tools {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .mod-tools .filters {
+            justify-content: center;
+        }
+        .mods-grid {
+            grid-template-columns: 1fr;
+        }
+        .home-icon img {
+            width: 32px;
+            height: 32px;
+        }
+        .home-icon span {
+            font-size: 11px;
+        }
+        .login-toast, .like-toast {
+            bottom: 80px;
+            padding: 14px 20px;
+            font-size: 14px;
+            width: 90%;
+            text-align: center;
+        }
+        .view-btn {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+    }
+    @media (max-width: 480px) {
+        .home-icon img {
+            width: 28px;
+            height: 28px;
+        }
+        .home-icon span {
+            font-size: 10px;
+        }
+        .like-btn {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        .view-btn {
+            padding: 8px 14px;
+            font-size: 12px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<!-- پارتیکل -->
+<canvas id="particlesCanvas"></canvas>
+
+<!-- ====== نوار بالایی ====== -->
+<div class="top-mini-bar">
+    <div class="container mini-bar-flex">
+        <div class="right-links">
+            <a href="news.html">📰 اخبار</a>
+            <a href="contact.html">📞 ارتباط با ما</a>
+        </div>
+        <div class="left-links" id="authLinks">
+            <a href="vrood.html" class="auth-link">🔐 ورود / ثبت‌نام</a>
+        </div>
+    </div>
+</div>
+
+<!-- ====== هدر ====== -->
+<header class="main-header">
+    <div class="container header-grid">
+        <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+        <div class="header-right">
+            <img src="https://uploadkon.ir/uploads/b57321_26-2147483648-210097.jpg" class="top-banner-logo hover-scale" alt="Logo">
+        </div>
+        <nav class="icon-menu" id="mainMenu">
+            <a href="index.html" class="home-icon">
+                <img src="https://uploadkon.ir/uploads/862016_26ChatGPT-Image-۲۷-خرداد-۱۴۰۵،-۰۱-۴۴-۲۱.png" alt="خانه">
+                <span>خانه</span>
+            </a>
+        </nav>
+        <div class="logo-section">
+            <span class="logo-text">𝐆𝐚𝐦𝐞𝐅𝐚𝐜𝐞</span>
+            <img src="https://uploadkon.ir/uploads/bde221_26574fd2be-c3db-41a9-ae44-d51c60f8c1f9.jpg" class="hover-scale" alt="Logo">
+        </div>
+    </div>
+</header>
+
+<!-- ====== هیرو ====== -->
+<section class="mod-hero">
+    <div class="container">
+        <h1>⬇️ مودهای دوبله فارسی</h1>
+        <p>دانلود مودهای فارسی‌ساز بازی ها با کیفیت عالی</p>
+    </div>
+</section>
+
+<!-- ====== پیام‌ها ====== -->
+<div class="login-toast" id="loginToast">
+    ⚠️ برای لایک کردن باید <a href="vrood.html">وارد حساب</a> خود شوید!
+</div>
+<div class="like-toast" id="likeToast"></div>
+
+<!-- ====== فیلتر و جستجو ====== -->
+<div class="container">
+    <div class="mod-tools">
+        <div class="filters scroll-animate">
+            <button class="filter-btn active" onclick="filterMods('all',this)">🎯 همه</button>
+            <button class="filter-btn" onclick="filterMods('gta',this)">🏙️ GTA</button>
+            <button class="filter-btn" onclick="filterMods('other',this)">🎮 سایر</button>
+        </div>
+        
+        <div class="search-wrapper scroll-animate">
+            <input type="text" id="searchInput" placeholder="🔍 جستجوی مود..." oninput="handleSearch()" autocomplete="off">
+            <span class="search-icon">🔍</span>
+            <button class="clear-btn" id="clearBtn" onclick="clearSearch()">✕</button>
+        </div>
+    </div>
+    
+    <div class="search-stats" id="searchStats">
+        <span id="resultCount">0</span> مود پیدا شد
+    </div>
+</div>
+
+<!-- ====== گرید مودها ====== -->
+<div class="container">
+    <div class="mods-grid stagger-grid" id="modsGrid">
+
+        <!-- مود 1: TMNT -->
+        <div class="mod-card rdr stagger-item" data-title="مود دوبله فارسی TMNT" data-category="rdr" data-id="mod1" onclick="openModPage('mod1')">
+            <img src="https://static.cdn.asset.aparat.com/avt/35128166-7383-l__4570.jpg?width=900&quality=90&secret=1eN3Tsq0tRw-ML4vl2DDQQ" alt="TMNT Mod">
+            <div class="mod-info">
+                <span class="mod-badge rdr">🎯 Ninja Turtles</span>
+                <h4>🎮 مود دوبله فارسی TMNT</h4>
+                <p class="mod-game">Teenage Mutant Ninja Turtles: Mutants in Manhattan</p>
+                <p class="mod-desc">دوبله کامل داستان بازی با صدای فارسی و کیفیت بالا</p>
+            </div>
+            <div class="card-actions">
+                <button class="view-btn" onclick="event.stopPropagation(); openModPage('mod1')">📖 مشاهده و دانلود</button>
+                <button class="like-btn" onclick="event.stopPropagation(); handleLikeMod('mod1')">
+                    <span class="heart">❤️</span>
+                    <span class="like-text">لایک</span>
+                    <span class="like-count" id="likeCount_mod1">0</span>
+                </button>
+            </div>
+        </div>
+
+       
+        </div>
+
+    </div>
+
+    <div class="no-result" id="noResult">
+        <div class="icon">🔍</div>
+        <h3>هیچ مودی پیدا نشد!</h3>
+        <p>عبارت جستجو را تغییر دهید یا فیلتر را عوض کنید.</p>
+    </div>
+</div>
+
+<!-- ====== عضویت ====== -->
+<section class="join-box scroll-animate">
+    <div class="join-container hover-glow">
+        <div class="qr-box float-anim">
+            <img src="https://uploadkon.ir/uploads/b8b821_26-2147483648-211880.jpg" alt="QR Rubika">
+        </div>
+        <div class="join-info">
+            <h3>📱 به کانال روبیکا بپیوند</h3>
+            <p>جدیدترین دوبله‌ها و محتوای اختصاصی GameFace</p>
+            <div class="rubika-id">آیدی: <span>@GameFace</span></div>
+            <a href="https://rubika.ir/GameFace" class="rubika-btn" target="_blank">ورود به روبیکا</a>
+        </div>
+    </div>
+</section>
+
+<!-- ====== فوتر ====== -->
+<footer class="site-footer scroll-animate">
+    <div class="container footer-grid">
+        <div class="footer-box">
+            <h3>🎮 GameFace</h3>
+            <p>تیم دوبله گیمینگ با محتوای فارسی برای بازی‌های مختلف</p>
+            <div class="footer-social">
+                <a href="https://rubika.ir/GameFace" target="_blank" aria-label="روبیکا">📱</a>
+                <a href="https://www.aparat.com/c_tyu" target="_blank" aria-label="آپارات">🎬</a>
+            </div>
+        </div>
+        <div class="footer-box">
+            <h3>⚡ لینک‌های سریع</h3>
+            <ul>
+                <li><a href="index.html">🏠 صفحه اصلی</a></li>
+                <li><a href="video-dobleh.html">🎬 ویدیوهای دوبله</a></li>
+                <li><a href="mod-farsi.html">⬇️ مودهای بازی</a></li>
+                <li><a href="news.html">📰 اخبار</a></li>
+                <li><a href="contact.html">📞 ارتباط با ما</a></li>
+            </ul>
+        </div>
+        <div class="footer-box">
+            <h3>📱 کانال روبیکا</h3>
+            <p>عضو شو و جدیدترین‌ها رو ببین</p>
+            <a href="https://rubika.ir/GameFace" class="rubika-btn" target="_blank">🚀 عضویت</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2026 <span>GameFace</span> - تمام حقوق محفوظ است.</p>
+    </div>
+</footer>
+
+<!-- ====== دکمه بازگشت ====== -->
+<button id="backToTop">↑</button>
+
+<script src="auth.js"></script>
+<script src="loader.js"></script>
+
+<script>
+// ============================================================
+// ====== توابع اصلی ======
+// ============================================================
+
+// ====== همبرگر ======
+document.getElementById('hamburgerBtn').addEventListener('click', function() {
+    document.getElementById('mainMenu').classList.toggle('open');
+});
+
+// ====== متغیرها ======
+let currentFilter = 'all';
+let searchQuery = '';
+let likedMods = JSON.parse(localStorage.getItem('gameface_liked_mods') || '{}');
+
+// ====== تابع نمایش پیام ======
+function showToast(message, type = 'like') {
+    const toast = document.getElementById(type === 'like' ? 'likeToast' : 'loginToast');
+    if (!toast) return;
+    
+    if (type === 'like') {
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+    } else {
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+}
+
+// ====== باز کردن صفحه مود ======
+function openModPage(modId) {
+    // ذخیره آیدی مود در localStorage
+    localStorage.setItem('gameface_current_mod', modId);
+    // رفتن به صفحه مود
+    window.location.href = 'mod-detail.html';
+}
+
+// ====== تابع لایک کردن مود ======
+async function handleLikeMod(modId) {
+    // بررسی لاگین بودن
+    const user = GameFaceAuth.getCurrentUser();
+    if (!user) {
+        showToast('برای لایک کردن باید وارد حساب خود شوید!', 'login');
+        return;
+    }
+
+    if (!modId) return;
+
+    // دریافت وضعیت فعلی لایک
+    const isLiked = likedMods[modId] || false;
+    
+    // تغییر وضعیت لایک
+    const newStatus = !isLiked;
+    likedMods[modId] = newStatus;
+    
+    // ذخیره در localStorage
+    localStorage.setItem('gameface_liked_mods', JSON.stringify(likedMods));
+
+    // به‌روزرسانی دکمه لایک
+    updateLikeButtonMod(modId, newStatus);
+
+    // نمایش پیام
+    if (newStatus) {
+        showToast('❤️ مود را لایک کردید!', 'like');
+    } else {
+        showToast('💔 لایک برداشته شد!', 'like');
+    }
+
+    // همگام‌سازی با سرور
+    try {
+        await GameFaceAuth.toggleLikeMod(modId);
+    } catch (error) {
+        console.error('Sync error:', error);
+    }
+}
+
+// ====== به‌روزرسانی دکمه لایک مود ======
+function updateLikeButtonMod(modId, isLiked) {
+    const buttons = document.querySelectorAll(`.like-btn[onclick*="${modId}"]`);
+    
+    buttons.forEach(btn => {
+        btn.classList.toggle('liked', isLiked);
+        const countSpan = btn.querySelector('.like-count');
+        if (countSpan) {
+            const currentCount = parseInt(countSpan.textContent) || 0;
+            countSpan.textContent = isLiked ? currentCount + 1 : Math.max(0, currentCount - 1);
+        }
+    });
+}
+
+// ====== بارگذاری وضعیت لایک‌ها ======
+function loadLikesMod() {
+    try {
+        const saved = localStorage.getItem('gameface_liked_mods');
+        if (saved) {
+            likedMods = JSON.parse(saved);
+        }
+    } catch (e) {
+        likedMods = {};
+    }
+}
+
+// ====== اعمال وضعیت لایک‌ها در صفحه ======
+function applyLikeStatusMod() {
+    Object.keys(likedMods).forEach(modId => {
+        if (likedMods[modId]) {
+            updateLikeButtonMod(modId, true);
+        }
+    });
+}
+
+// ====== فیلتر ======
+function filterMods(category, btn) {
+    currentFilter = category;
+    const buttons = document.querySelectorAll('.filter-btn');
+    buttons.forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    applyFiltersAndSearch();
+}
+
+// ====== جستجو ======
+function handleSearch() {
+    const input = document.getElementById('searchInput');
+    searchQuery = input.value.trim();
+    const clearBtn = document.getElementById('clearBtn');
+    clearBtn.classList.toggle('visible', searchQuery.length > 0);
+    applyFiltersAndSearch();
+}
+
+function clearSearch() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('clearBtn').classList.remove('visible');
+    searchQuery = '';
+    applyFiltersAndSearch();
+    document.getElementById('searchInput').focus();
+}
+
+function applyFiltersAndSearch() {
+    const cards = document.querySelectorAll('.mod-card');
+    const noResult = document.getElementById('noResult');
+    const stats = document.getElementById('searchStats');
+    const resultCount = document.getElementById('resultCount');
+    
+    let visibleCount = 0;
+    const query = searchQuery.toLowerCase();
+
+    cards.forEach((card) => {
+        const categoryMatch = currentFilter === 'all' || card.getAttribute('data-category') === currentFilter;
+        const title = (card.getAttribute('data-title') || '').toLowerCase();
+        const searchMatch = query === '' || title.includes(query);
+        
+        if (categoryMatch && searchMatch) {
+            card.classList.remove('hidden');
+            card.classList.add('matched');
+            visibleCount++;
+            setTimeout(() => card.classList.remove('matched'), 400);
+        } else {
+            card.classList.add('hidden');
+            card.classList.remove('matched');
+        }
+    });
+
+    stats.classList.toggle('visible', query !== '');
+    if (query !== '') resultCount.textContent = visibleCount;
+    noResult.classList.toggle('visible', visibleCount === 0);
+}
+
+// ====== انیمیشن اسکرول ======
+const scrollElements = document.querySelectorAll('.scroll-animate');
+const staggerItems = document.querySelectorAll('.stagger-item');
+
+const scrollObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+}, { threshold: 0.15, rootMargin: '0px 0px -30px 0px' });
+
+scrollElements.forEach(el => scrollObserver.observe(el));
+
+const staggerObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+}, { threshold: 0.1 });
+
+staggerItems.forEach(el => staggerObserver.observe(el));
+
+// ====== بازگشت ======
+const backBtn = document.getElementById('backToTop');
+window.addEventListener('scroll', () => {
+    backBtn.style.display = window.scrollY > 400 ? 'flex' : 'none';
+});
+backBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// ====== پارتیکل ======
+const canvas = document.getElementById('particlesCanvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resizeCanvas() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const particles = [];
+for (let i = 0; i < 50; i++) {
+    particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        size: Math.random() * 2 + 0.5,
+        speedX: (Math.random() - 0.5) * 0.4,
+        speedY: (Math.random() - 0.5) * 0.4,
+        hue: 220 + Math.random() * 60
+    });
+}
+
+function drawParticles() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        if (p.x < 0 || p.x > W) p.speedX *= -1;
+        if (p.y < 0 || p.y > H) p.speedY *= -1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, 0.25)`;
+        ctx.shadowColor = `hsla(${p.hue}, 80%, 60%, 0.1)`;
+        ctx.shadowBlur = 8;
+        ctx.fill();
+    });
+    requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+// ============================================================
+// ====== اجرای اولیه ======
+// ============================================================
+
+// بارگذاری لایک‌ها
+loadLikesMod();
+
+// اعمال وضعیت لایک‌ها
+setTimeout(() => {
+    applyLikeStatusMod();
+    console.log('✅ وضعیت لایک مودها بارگذاری شد');
+}, 500);
+
+// به‌روزرسانی هدر
+GameFaceAuth.updateAuthUI();
+
+console.log('📦 GameFace Mods loaded!');
+console.log('❤️ Liked mods:', likedMods);
+
+
+
+
+// ====== تابع دانلود با ثبت آمار ======
+async function handleDownload(videoId, videoTitle) {
+    // بررسی لاگین بودن
+    const user = GameFaceAuth.getCurrentUser();
+    if (!user) {
+        alert('⚠️ برای دانلود باید وارد حساب خود شوید!');
+        window.location.href = 'vrood.html';
+        return;
+    }
+
+    // ثبت دانلود
+    const result = await GameFaceAuth.downloadVideo(videoId, videoTitle);
+    
+    if (result.success) {
+        // شروع دانلود
+        const link = document.createElement('a');
+        link.href = document.getElementById(videoId).src;
+        link.download = videoTitle + '.mp4';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showToast('✅ ' + result.message, 'like');
+    } else {
+        showToast('❌ ' + result.message, 'login');
+    }
+}
+
+
+
+
+</script>
+
+</body>
+</html>

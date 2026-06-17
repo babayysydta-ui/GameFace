@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اخبار GameFace</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="menu-style.css">
+<link rel="icon" href="https://uploadkon.ir/uploads/bde221_26574fd2be-c3db-41a9-ae44-d51c60f8c1f9.jpg">
+<style>
+    .news-page {
+        padding: 40px 20px 60px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .news-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 30px;
+        padding: 20px 0;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .news-card {
+        background: linear-gradient(145deg, rgba(20,22,32,0.95), rgba(10,12,20,0.95));
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.06);
+        transition: 0.4s;
+        cursor: pointer;
+        text-decoration: none;
+        color: #fff;
+        display: block;
+    }
+
+    .news-card:hover {
+        transform: translateY(-8px);
+        border-color: rgba(124,92,255,0.3);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    }
+
+    .news-card .news-image {
+        width: 100%;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+    }
+
+    .news-card .news-content {
+        padding: 25px;
+    }
+
+    .news-card .news-tag {
+        display: inline-block;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, #7c5cff, #00eaff);
+        color: #fff;
+        animation: pulseTag 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseTag {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+    }
+
+    .news-card h3 {
+        color: #fff;
+        font-size: 22px;
+        margin-bottom: 10px;
+        font-family: 'Rajdhani', 'Vazirmatn', sans-serif;
+    }
+
+    .news-card p {
+        color: rgba(255,255,255,0.6);
+        font-size: 15px;
+        line-height: 1.9;
+        margin-bottom: 15px;
+    }
+
+    .news-card .news-date {
+        color: rgba(255,255,255,0.25);
+        font-size: 13px;
+    }
+
+    .news-card .news-btn {
+        display: inline-block;
+        padding: 10px 24px;
+        background: linear-gradient(135deg, #7c5cff, #00eaff);
+        color: #fff;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 14px;
+        transition: 0.3s;
+        text-decoration: none;
+        font-family: 'Rajdhani', 'Vazirmatn', sans-serif;
+        margin-top: 5px;
+    }
+
+    .news-card .news-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 30px rgba(124,92,255,0.3);
+    }
+
+    .news-hero {
+        text-align: center;
+        padding: 30px 0;
+    }
+
+    .news-hero h1 {
+        font-size: 36px;
+        font-family: 'Rajdhani', 'Vazirmatn', sans-serif;
+        color: #fff;
+        margin-bottom: 8px;
+    }
+
+    .news-hero p {
+        color: rgba(255,255,255,0.5);
+        font-size: 16px;
+    }
+
+    /* ====== استایل منو ====== */
+    .home-icon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        color: rgba(255,255,255,0.8);
+        transition: 0.3s;
+        gap: 4px;
+        text-decoration: none;
+    }
+    .home-icon img {
+        width: 44px;
+        height: 44px;
+        filter: brightness(0) invert(1);
+        transition: 0.3s;
+        object-fit: contain;
+    }
+    .home-icon span {
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.4;
+        font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+    }
+    .home-icon:hover {
+        color: #00eaff;
+        transform: translateY(-3px);
+    }
+    .home-icon:hover img {
+        filter: brightness(0) invert(1) drop-shadow(0 0 12px #00eaff);
+        transform: scale(1.08);
+    }
+
+    .scroll-animate {
+        opacity: 0;
+        transform: translateY(25px);
+        transition: all 0.5s ease;
+    }
+    .scroll-animate.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+        .news-grid {
+            padding: 10px 0;
+        }
+        .news-hero h1 {
+            font-size: 28px;
+        }
+        .home-icon img {
+            width: 32px;
+            height: 32px;
+        }
+        .home-icon span {
+            font-size: 11px;
+        }
+        .news-card h3 {
+            font-size: 19px;
+        }
+    }
+    @media (max-width: 480px) {
+        .home-icon img {
+            width: 28px;
+            height: 28px;
+        }
+        .home-icon span {
+            font-size: 10px;
+        }
+        .news-card .news-content {
+            padding: 18px;
+        }
+        .news-card h3 {
+            font-size: 17px;
+        }
+        .news-card p {
+            font-size: 14px;
+        }
+        .news-hero h1 {
+            font-size: 24px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<!-- پارتیکل -->
+<canvas id="particlesCanvas"></canvas>
+
+<!-- ====== نوار بالایی ====== -->
+<div class="top-mini-bar">
+    <div class="container mini-bar-flex">
+        <div class="right-links">
+            <a href="news.html">📰 اخبار</a>
+            <a href="contact.html">📞 ارتباط با ما</a>
+        </div>
+        <div class="left-links" id="authLinks">
+            <a href="vrood.html" class="auth-link">🔐 ورود / ثبت‌نام</a>
+        </div>
+    </div>
+</div>
+
+<!-- ====== هدر ====== -->
+<header class="main-header">
+    <div class="container header-grid">
+        <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+        <div class="header-right">
+            <img src="https://uploadkon.ir/uploads/b57321_26-2147483648-210097.jpg" class="top-banner-logo hover-scale" alt="Logo">
+        </div>
+        <nav class="icon-menu" id="mainMenu">
+            <a href="index.html" class="home-icon">
+                <img src="https://uploadkon.ir/uploads/862016_26ChatGPT-Image-۲۷-خرداد-۱۴۰۵،-۰۱-۴۴-۲۱.png" alt="خانه">
+                <span>خانه</span>
+            </a>
+        </nav>
+        <div class="logo-section">
+            <span class="logo-text">𝐆𝐚𝐦𝐞𝐅𝐚𝐜𝐞</span>
+            <img src="https://uploadkon.ir/uploads/bde221_26574fd2be-c3db-41a9-ae44-d51c60f8c1f9.jpg" class="hover-scale" alt="Logo">
+        </div>
+    </div>
+</header>
+
+<!-- ====== هیرو اخبار ====== -->
+<section class="news-hero">
+    <div class="container">
+        <h1>📰 اخبار GameFace</h1>
+        <p>آخرین اخبار، رویدادها و بروزرسانی‌های تیم GameFace</p>
+    </div>
+</section>
+
+<!-- ====== گرید اخبار ====== -->
+<section class="news-page">
+    <div class="container">
+        <div class="news-grid">
+
+            <!-- ============================================================ -->
+            <!-- ====== پست جام جهانی ====== -->
+            <!-- ============================================================ -->
+            <a href="news-detail.html" class="news-card stagger-item scroll-animate">
+                <img class="news-image" src="https://uploadkon.ir/uploads/d27417_26InShot-20260617-195403230.jpg" alt="مسابقه پیش‌بینی جام جهانی">
+                <div class="news-content">
+                    <span class="news-tag">⚽ مسابقه ویژه</span>
+                    <h3>🏆 مسابقه پیش‌بینی نتایج جام جهانی ۲۰۲۶</h3>
+                    <p>
+                        به مناسبت جام جهانی ۲۰۲۶، GameFace مسابقه بزرگ پیش‌بینی نتایج 
+                        مسابقات رو برگزار میکنه! جوایز نقدی و غیرنقدی ویژه در انتظار برنده‌هاست.
+                        برای شرکت در مسابقه، روی دکمه زیر کلیک کن.
+                    </p>
+                    <span class="news-date">📅 ۲۸ خرداد ۱۴۰۵</span>
+                    <div style="margin-top:12px;">
+                        <span class="news-btn">📝 شرکت در مسابقه</span>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+    </div>
+</section>
+
+<!-- ====== عضویت ====== -->
+<section class="join-box scroll-animate">
+    <div class="join-container hover-glow">
+        <div class="qr-box float-anim">
+            <img src="https://uploadkon.ir/uploads/b8b821_26-2147483648-211880.jpg" alt="QR Rubika">
+        </div>
+        <div class="join-info">
+            <h3>📱 به کانال روبیکا بپیوند</h3>
+            <p>جدیدترین دوبله‌ها و محتوای اختصاصی GameFace</p>
+            <div class="rubika-id">آیدی: <span>@GameFace</span></div>
+            <a href="https://rubika.ir/GameFace" class="rubika-btn" target="_blank">ورود به روبیکا</a>
+        </div>
+    </div>
+</section>
+
+<!-- ====== فوتر ====== -->
+<footer class="site-footer scroll-animate">
+    <div class="container footer-grid">
+        <div class="footer-box">
+            <h3>🎮 GameFace</h3>
+            <p>تیم دوبله گیمینگ با محتوای فارسی برای بازی‌های مختلف</p>
+            <div class="footer-social">
+                <a href="https://rubika.ir/GameFace" target="_blank" aria-label="روبیکا">📱</a>
+                <a href="https://www.aparat.com/c_tyu" target="_blank" aria-label="آپارات">🎬</a>
+            </div>
+        </div>
+        <div class="footer-box">
+            <h3>⚡ لینک‌های سریع</h3>
+            <ul>
+                <li><a href="index.html">🏠 صفحه اصلی</a></li>
+                <li><a href="video-dobleh.html">🎬 ویدیوهای دوبله</a></li>
+                <li><a href="mod-farsi.html">⬇️ مودهای بازی</a></li>
+                <li><a href="news.html">📰 اخبار</a></li>
+                <li><a href="contact.html">📞 ارتباط با ما</a></li>
+            </ul>
+        </div>
+        <div class="footer-box">
+            <h3>📱 کانال روبیکا</h3>
+            <p>عضو شو و جدیدترین‌ها رو ببین</p>
+            <a href="https://rubika.ir/GameFace" class="rubika-btn" target="_blank">🚀 عضویت</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2026 <span>GameFace</span> - تمام حقوق محفوظ است.</p>
+    </div>
+</footer>
+
+<!-- ====== دکمه بازگشت ====== -->
+<button id="backToTop">↑</button>
+
+<script src="auth.js"></script>
+<script src="loader.js"></script>
+
+<script>
+// ============================================================
+// ====== همبرگر ======
+// ============================================================
+
+document.getElementById('hamburgerBtn').addEventListener('click', function() {
+    document.getElementById('mainMenu').classList.toggle('open');
+});
+
+// ============================================================
+// ====== انیمیشن اسکرول ======
+// ============================================================
+
+const scrollElements = document.querySelectorAll('.scroll-animate');
+const staggerItems = document.querySelectorAll('.stagger-item');
+
+const scrollObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+}, { threshold: 0.15, rootMargin: '0px 0px -30px 0px' });
+
+scrollElements.forEach(el => scrollObserver.observe(el));
+
+const staggerObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+}, { threshold: 0.1 });
+
+staggerItems.forEach(el => staggerObserver.observe(el));
+
+// ============================================================
+// ====== بازگشت به بالا ======
+// ============================================================
+
+const backBtn = document.getElementById('backToTop');
+window.addEventListener('scroll', () => {
+    backBtn.style.display = window.scrollY > 400 ? 'flex' : 'none';
+});
+backBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// ============================================================
+// ====== پارتیکل ======
+// ============================================================
+
+const canvas = document.getElementById('particlesCanvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+
+function resizeCanvas() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const particles = [];
+for (let i = 0; i < 25; i++) {
+    particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        size: Math.random() * 1.8 + 0.3,
+        speedX: (Math.random() - 0.5) * 0.3,
+        speedY: (Math.random() - 0.5) * 0.3,
+        hue: 220 + Math.random() * 60
+    });
+}
+
+function drawParticles() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        if (p.x < 0 || p.x > W) p.speedX *= -1;
+        if (p.y < 0 || p.y > H) p.speedY *= -1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, 0.2)`;
+        ctx.shadowColor = `hsla(${p.hue}, 80%, 60%, 0.08)`;
+        ctx.shadowBlur = 6;
+        ctx.fill();
+    });
+    requestAnimationFrame(drawParticles);
+}
+drawParticles();
+</script>
+
+</body>
+</html>

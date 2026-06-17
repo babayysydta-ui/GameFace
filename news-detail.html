@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مسابقه پیش‌بینی جام جهانی | GameFace</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="menu-style.css">
+<link rel="icon" href="https://uploadkon.ir/uploads/bde221_26574fd2be-c3db-41a9-ae44-d51c60f8c1f9.jpg">
+<style>
+    .news-detail-page {
+        padding: 40px 20px 60px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .news-detail-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: linear-gradient(145deg, rgba(20,22,32,0.96), rgba(10,12,20,0.96));
+        border-radius: 24px;
+        padding: 40px;
+        border: 1px solid rgba(255,255,255,0.06);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    /* ====== عکس بالا ====== */
+    .news-detail-container .news-main-image {
+        width: 100%;
+        border-radius: 16px;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        margin-bottom: 20px;
+        border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* ====== تگ ====== */
+    .news-detail-container .news-tag {
+        display: inline-block;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, #7c5cff, #00eaff);
+        color: #fff;
+    }
+
+    /* ====== عنوان ====== */
+    .news-detail-container h1 {
+        font-size: 30px;
+        color: #fff;
+        margin-bottom: 8px;
+        font-family: 'Rajdhani', 'Vazirmatn', sans-serif;
+        line-height: 1.3;
+    }
+
+    /* ====== تاریخ ====== */
+    .news-detail-container .news-meta {
+        color: rgba(255,255,255,0.3);
+        font-size: 14px;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* ====== ویدیو ====== */
+    .news-detail-container .video-wrapper {
+        margin: 20px 0 25px;
+        border-radius: 16px;
+        overflow: hidden;
+        background: #000;
+        border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .news-detail-container .video-wrapper video {
+        width: 100%;
+        display: block;
+        aspect-ratio: 16/9;
+        background: #000;
+    }
+
+    .news-detail-container .video-caption {
+        color: rgba(255,255,255,0.3);
+        font-size: 13px;
+        text-align: center;
+        margin-top: 8px;
+    }
+
+    /* ====== متن خبر ====== */
+    .news-detail-container .news-body {
+        color: rgba(255,255,255,0.8);
+        font-size: 16px;
+        line-height: 2.2;
+        margin-bottom: 25px;
+    }
+
+    .news-detail-container .news-body p {
+        margin-bottom: 15px;
+    }
+
+    .news-detail-container .news-body h3 {
+        color: #fff;
+        font-size: 20px;
+        margin: 25px 0 15px;
+        font-family: 'Rajdhani', 'Vazirmatn', sans-serif;
+    }
+
+    .news-detail-container .news-body ul {
+        list-style: none;
+        padding: 0;
+        margin: 15px 0;
+    }
+
+    .news-detail-container .news-body ul li {
+        padding: 10px 0;
+        padding-right: 30px;
+        position: relative;
+        color: rgba(255,255,255,0.7);
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .news-detail-container .news-body ul li::before {
+        content: '⚽';
+        position: absolute;
+        right: 0;
+        top: 10px;
+    }
+
+    /* ====== دکمه ثبت‌نام ====== */
+    .news-detail-container .join-btn {
+        display: inline-block;
+        padding: 16px 40px;
+        background: linear-gradient(135deg, #7c5cff, #00eaff);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 18px;
+        cursor: pointer;
+        transition: 0.3s;
+        text-decoration: none;
+        font-family: 'Rajdhani', 'Vazirmatn', sans-serif;
+        margin-top: 10px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 0 30px rgba(124,92,255,0.2);
+    }
+
+    .news-detail-container .join-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 50px rgba(124,92,255,0.4);
+    }
+
+    .news-detail-container .join-note {
+        text-align: center;
+        color: rgba(255,255,255,0.2);
+        font-size: 13px;
+        margin-top: 12px;
+    }
+
+    /* ====== بازگشت ====== */
+    .back-to-news {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: rgba(255,255,255,0.5);
+        text-decoration: none;
+        transition: 0.3s;
+        margin-bottom: 20px;
+        font-size: 15px;
+    }
+
+    .back-to-news:hover {
+        color: #00eaff;
+    }
+
+    /* ====== استایل منو ====== */
+    .home-icon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        color: rgba(255,255,255,0.8);
+        transition: 0.3s;
+        gap: 4px;
+        text-decoration: none;
+    }
+    .home-icon img {
+        width: 44px;
+        height: 44px;
+        filter: brightness(0) invert(1);
+        transition: 0.3s;
+        object-fit: contain;
+    }
+    .home-icon span {
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.4;
+        font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+    }
+    .home-icon:hover {
+        color: #00eaff;
+        transform: translateY(-3px);
+    }
+    .home-icon:hover img {
+        filter: brightness(0) invert(1) drop-shadow(0 0 12px #00eaff);
+        transform: scale(1.08);
+    }
+
+    .scroll-animate {
+        opacity: 0;
+        transform: translateY(25px);
+        transition: all 0.5s ease;
+    }
+    .scroll-animate.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+        .news-detail-container {
+            padding: 25px;
+        }
+        .news-detail-container h1 {
+            font-size: 24px;
+        }
+        .home-icon img {
+            width: 32px;
+            height: 32px;
+        }
+        .home-icon span {
+            font-size: 11px;
+        }
+        .news-detail-container .join-btn {
+            padding: 14px 20px;
+            font-size: 16px;
+        }
+    }
+    @media (max-width: 480px) {
+        .home-icon img {
+            width: 28px;
+            height: 28px;
+        }
+        .home-icon span {
+            font-size: 10px;
+        }
+        .news-detail-container {
+            padding: 18px;
+        }
+        .news-detail-container h1 {
+            font-size: 20px;
+        }
+        .news-detail-container .news-body {
+            font-size: 14px;
+        }
+        .news-detail-container .join-btn {
+            padding: 12px 16px;
+            font-size: 14px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<!-- پارتیکل -->
+<canvas id="particlesCanvas"></canvas>
+
+<!-- ====== نوار بالایی ====== -->
+<div class="top-mini-bar">
+    <div class="container mini-bar-flex">
+        <div class="right-links">
+            <a href="news.html">📰 اخبار</a>
+            <a href="contact.html">📞 ارتباط با ما</a>
+        </div>
+        <div class="left-links" id="authLinks">
+            <a href="vrood.html" class="auth-link">🔐 ورود / ثبت‌نام</a>
+        </div>
+    </div>
+</div>
+
+<!-- ====== هدر ====== -->
+<header class="main-header">
+    <div class="container header-grid">
+        <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+        <div class="header-right">
+            <img src="https://uploadkon.ir/uploads/b57321_26-2147483648-210097.jpg" class="top-banner-logo hover-scale" alt="Logo">
+        </div>
+        <nav class="icon-menu" id="mainMenu">
+            <a href="index.html" class="home-icon">
+                <img src="https://uploadkon.ir/uploads/862016_26ChatGPT-Image-۲۷-خرداد-۱۴۰۵،-۰۱-۴۴-۲۱.png" alt="خانه">
+                <span>خانه</span>
+            </a>
+        </nav>
+        <div class="logo-section">
+            <span class="logo-text">𝐆𝐚𝐦𝐞𝐅𝐚𝐜𝐞</span>
+            <img src="https://uploadkon.ir/uploads/bde221_26574fd2be-c3db-41a9-ae44-d51c60f8c1f9.jpg" class="hover-scale" alt="Logo">
+        </div>
+    </div>
+</header>
+
+<!-- ====== صفحه جزئیات خبر ====== -->
+<section class="news-detail-page">
+    <div class="container">
+        <a href="news.html" class="back-to-news">← بازگشت به اخبار</a>
+        
+        <div class="news-detail-container scroll-animate">
+
+            <!-- ====== ۲. تگ ====== -->
+            <span class="news-tag">⚽ مسابقه ویژه</span>
+
+            <!-- ====== ۳. عنوان ====== -->
+            <h1>🏆 مسابقه پیش‌بینی نتایج جام جهانی ۲۰۲۶</h1>
+
+            <!-- ====== ۵. ویدیو ====== -->
+            <div class="video-wrapper">
+                <video controls>
+                    <source src="Football.mp4" type="video/mp4">
+                    مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
+                </video>
+            </div>
+            <div class="video-caption">🎥 ویدیوی معرفی مسابقه پیش‌بینی جام جهانی</div>
+
+            <!-- ====== ۶. متن خبر ====== -->
+            <div class="news-body">
+                <p>
+                    <strong>🎉 GameFace</strong> به مناسبت برگزاری <strong>جام جهانی ۲۰۲۶</strong>، 
+                    یک مسابقه بزرگ پیش‌بینی نتایج مسابقات برگزار می‌کند!
+                </p>
+
+                <p>
+                    این مسابقه فرصتی عالی برای علاقه‌مندان به فوتبال و بازی‌های ویدیویی است 
+                    تا با پیش‌بینی نتایج بازی‌ها، جوایز ویژه‌ای را از آن خود کنند.
+                </p>
+
+    
+
+                <h3>⚽ قوانین شرکت در مسابقه</h3>
+                <ul>
+                    <li>✅ شرکت برای همه آزاد است</li>
+                    <li>✅ هر فرد فقط یک بار می‌تواند پیش‌بینی خود را ثبت کند</li>
+                    <li>✅ برنده‌ها بر اساس دقیق‌ترین پیش‌ بینی‌ ها انتخاب می‌شوند</li>
+                </ul>
+            </div>
+
+            <!-- ====== ۷. دکمه ثبت‌نام ====== -->
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfUuFI2KKTAb3BN3octWowrniTeTDsA_FtK4pAkXD90FBK1GA/viewform" 
+               target="_blank" 
+               class="join-btn">
+                📝 ثبت نام در مسابقه پیش‌بینی جام جهانی
+            </a>
+
+            <p class="join-note">
+                ⏳ زمان ثبت‌نام محدود است، سریع اقدام کنید!
+            </p>
+
+        </div>
+    </div>
+</section>
+
+<!-- ====== فوتر ====== -->
+<footer class="site-footer scroll-animate">
+    <div class="container footer-grid">
+        <div class="footer-box">
+            <h3>🎮 GameFace</h3>
+            <p>تیم دوبله گیمینگ با محتوای فارسی برای بازی‌های مختلف</p>
+            <div class="footer-social">
+                <a href="https://rubika.ir/GameFace" target="_blank" aria-label="روبیکا">📱</a>
+                <a href="https://www.aparat.com/c_tyu" target="_blank" aria-label="آپارات">🎬</a>
+            </div>
+        </div>
+        <div class="footer-box">
+            <h3>⚡ لینک‌های سریع</h3>
+            <ul>
+                <li><a href="index.html">🏠 صفحه اصلی</a></li>
+                <li><a href="video-dobleh.html">🎬 ویدیوهای دوبله</a></li>
+                <li><a href="mod-farsi.html">⬇️ مودهای بازی</a></li>
+                <li><a href="news.html">📰 اخبار</a></li>
+                <li><a href="contact.html">📞 ارتباط با ما</a></li>
+            </ul>
+        </div>
+        <div class="footer-box">
+            <h3>📱 کانال روبیکا</h3>
+            <p>عضو شو و جدیدترین‌ها رو ببین</p>
+            <a href="https://rubika.ir/GameFace" class="rubika-btn" target="_blank">🚀 عضویت</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2026 <span>GameFace</span> - تمام حقوق محفوظ است.</p>
+    </div>
+</footer>
+
+<!-- ====== دکمه بازگشت ====== -->
+<button id="backToTop">↑</button>
+
+<script src="auth.js"></script>
+<script src="loader.js"></script>
+
+<script>
+// ============================================================
+// ====== همبرگر ======
+// ============================================================
+
+document.getElementById('hamburgerBtn').addEventListener('click', function() {
+    document.getElementById('mainMenu').classList.toggle('open');
+});
+
+// ============================================================
+// ====== انیمیشن اسکرول ======
+// ============================================================
+
+const scrollElements = document.querySelectorAll('.scroll-animate');
+
+const scrollObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+}, { threshold: 0.15, rootMargin: '0px 0px -30px 0px' });
+
+scrollElements.forEach(el => scrollObserver.observe(el));
+
+// ============================================================
+// ====== بازگشت به بالا ======
+// ============================================================
+
+const backBtn = document.getElementById('backToTop');
+window.addEventListener('scroll', () => {
+    backBtn.style.display = window.scrollY > 400 ? 'flex' : 'none';
+});
+backBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// ============================================================
+// ====== پارتیکل ======
+// ============================================================
+
+const canvas = document.getElementById('particlesCanvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+
+function resizeCanvas() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const particles = [];
+for (let i = 0; i < 25; i++) {
+    particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        size: Math.random() * 1.8 + 0.3,
+        speedX: (Math.random() - 0.5) * 0.3,
+        speedY: (Math.random() - 0.5) * 0.3,
+        hue: 220 + Math.random() * 60
+    });
+}
+
+function drawParticles() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        if (p.x < 0 || p.x > W) p.speedX *= -1;
+        if (p.y < 0 || p.y > H) p.speedY *= -1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, 0.2)`;
+        ctx.shadowColor = `hsla(${p.hue}, 80%, 60%, 0.08)`;
+        ctx.shadowBlur = 6;
+        ctx.fill();
+    });
+    requestAnimationFrame(drawParticles);
+}
+drawParticles();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ارتباط با ما | GameFace</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="menu-style.css">
+<link rel="icon" href="https://uploadkon.ir/uploads/bde221_26574fd2be-c3db-41a9-ae44-d51c60f8c1f9.jpg">
+<style>
+    /* ====== استایل منو ====== */
+    .home-icon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        color: rgba(255,255,255,0.8);
+        transition: 0.3s;
+        gap: 4px;
+        text-decoration: none;
+    }
+    .home-icon img {
+        width: 44px;
+        height: 44px;
+        filter: brightness(0) invert(1);
+        transition: 0.3s;
+        object-fit: contain;
+    }
+    .home-icon span {
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.4;
+        font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+    }
+    .home-icon:hover {
+        color: #00eaff;
+        transform: translateY(-3px);
+    }
+    .home-icon:hover img {
+        filter: brightness(0) invert(1) drop-shadow(0 0 12px #00eaff);
+        transform: scale(1.08);
+    }
+
+    @media (max-width: 768px) {
+        .home-icon img {
+            width: 32px;
+            height: 32px;
+        }
+        .home-icon span {
+            font-size: 11px;
+        }
+    }
+    @media (max-width: 480px) {
+        .home-icon img {
+            width: 28px;
+            height: 28px;
+        }
+        .home-icon span {
+            font-size: 10px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<!-- پارتیکل -->
+<canvas id="particlesCanvas"></canvas>
+
+<!-- ====== نوار بالایی ====== -->
+<div class="top-mini-bar">
+    <div class="container mini-bar-flex">
+        <div class="right-links">
+            <a href="contact.html">📞 ارتباط با ما</a>
+        </div>
+        <div class="left-links" id="authLinks">
+            <a href="vrood.html">🔐 ورود / ثبت‌نام</a>
+        </div>
+    </div>
+</div>
+
+<!-- ====== هدر ====== -->
+<header class="main-header">
+    <div class="container header-grid">
+        <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+        <div class="header-right">
+            <img src="https://uploadkon.ir/uploads/b57321_26-2147483648-210097.jpg" class="top-banner-logo hover-scale" alt="Logo">
+        </div>
+
+        <!-- ====== منوی اصلی ====== -->
+        <nav class="icon-menu" id="mainMenu">
+            <a href="index.html" class="home-icon">
+                <img src="https://uploadkon.ir/uploads/862016_26ChatGPT-Image-۲۷-خرداد-۱۴۰۵،-۰۱-۴۴-۲۱.png" alt="خانه">
+                <span>خانه</span>
+            </a>
+        </nav>
+
+        <div class="logo-section">
+            <span class="logo-text">𝐆𝐚𝐦𝐞𝐅𝐚𝐜𝐞</span>
+            <img src="https://uploadkon.ir/uploads/bde221_26574fd2be-c3db-41a9-ae44-d51c60f8c1f9.jpg" class="hover-scale" alt="Logo">
+        </div>
+    </div>
+</header>
+
+<!-- ====== بقیه محتوای صفحه ====== -->
+<section class="page-hero">
+    <div class="container">
+        <h1>📞 ارتباط با ما</h1>
+        <p>راه‌های ارتباط با تیم GameFace</p>
+    </div>
+</section>
+
+<section class="join-box scroll-animate">
+    <div class="join-container hover-glow">
+        <div class="qr-box float-anim">
+            <img src="https://uploadkon.ir/uploads/b8b821_26-2147483648-211880.jpg" alt="QR Rubika">
+        </div>
+        <div class="join-info">
+            <h3>📱 از طریق روبیکا</h3>
+            <div class="rubika-id">آیدی روبیکا: <span>@Baba_Game</span></div>
+            <a href="https://rubika.ir/Baba_Game" class="rubika-btn" target="_blank">ورود به روبیکا</a>
+            <p style="margin-top:15px;">📞 شماره تماس: <a href="tel:09942090519" style="color:#00eaff;">09942090519</a></p>
+        </div>
+    </div>
+</section>
+
+<!-- ====== فوتر ====== -->
+<footer class="site-footer scroll-animate">
+    <div class="container footer-grid">
+        <div class="footer-box">
+            <h3>🎮 GameFace</h3>
+            <p>تیم دوبله گیمینگ با محتوای فارسی برای بازی‌های مختلف</p>
+            <div class="footer-social">
+                <a href="https://rubika.ir/GameFace" target="_blank" aria-label="روبیکا">📱</a>
+                <a href="https://www.aparat.com/c_tyu" target="_blank" aria-label="آپارات">🎬</a>
+            </div>
+        </div>
+        <div class="footer-box">
+            <h3>⚡ لینک‌های سریع</h3>
+            <ul>
+                <li><a href="index.html">🏠 صفحه اصلی</a></li>
+                <li><a href="video-dobleh.html">🎬 ویدیوهای دوبله</a></li>
+                <li><a href="mod-farsi.html">⬇️ مودهای بازی</a></li>
+                <li><a href="contact.html">📞 ارتباط با ما</a></li>
+            </ul>
+        </div>
+        <div class="footer-box">
+            <h3>📱 کانال روبیکا</h3>
+            <p>عضو شو و جدیدترین‌ها رو ببین</p>
+            <a href="https://rubika.ir/GameFace" class="rubika-btn" target="_blank">🚀 عضویت</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2026 <span>GameFace</span> - تمام حقوق محفوظ است.</p>
+    </div>
+</footer>
+
+<!-- ====== دکمه بازگشت ====== -->
+<button id="backToTop">↑</button>
+<script src="auth.js"></script>
+<script src="loader.js"></script>
+
+<script>
+document.getElementById('hamburgerBtn').addEventListener('click', function() {
+    document.getElementById('mainMenu').classList.toggle('open');
+});
+
+// ====== انیمیشن اسکرول ======
+const scrollElements = document.querySelectorAll('.scroll-animate');
+const observerOptions = {
+    threshold: 0.15,
+    rootMargin: '0px 0px -30px 0px'
+};
+
+const scrollObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, observerOptions);
+
+scrollElements.forEach(el => scrollObserver.observe(el));
+
+const backBtn = document.getElementById('backToTop');
+window.addEventListener('scroll', () => {
+    backBtn.style.display = window.scrollY > 400 ? 'flex' : 'none';
+});
+backBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// ====== پارتیکل ======
+const canvas = document.getElementById('particlesCanvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resizeCanvas() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const particles = [];
+for (let i = 0; i < 25; i++) {
+    particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        size: Math.random() * 1.8 + 0.3,
+        speedX: (Math.random() - 0.5) * 0.3,
+        speedY: (Math.random() - 0.5) * 0.3,
+        hue: 220 + Math.random() * 60
+    });
+}
+
+function drawParticles() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        if (p.x < 0 || p.x > W) p.speedX *= -1;
+        if (p.y < 0 || p.y > H) p.speedY *= -1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, 0.2)`;
+        ctx.shadowColor = `hsla(${p.hue}, 80%, 60%, 0.08)`;
+        ctx.shadowBlur = 6;
+        ctx.fill();
+    });
+    requestAnimationFrame(drawParticles);
+}
+drawParticles();
+</script>
+
+</body>
+</html>

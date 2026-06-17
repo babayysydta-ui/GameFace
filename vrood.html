@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ورود و ثبت‌نام | GameFace</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="menu-style.css">
+    <link rel="icon" href="https://uploadkon.ir/uploads/bde221_26574fd2be-c3db-41a9-ae44-d51c60f8c1f9.jpg">
+    <style>
+        /* ====== استایل صفحه ورود ====== */
+        .auth-page {
+            padding: 40px 20px 60px;
+            position: relative;
+            z-index: 1;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-box {
+            max-width: 460px;
+            width: 100%;
+            margin: 0 auto;
+            background: linear-gradient(145deg, rgba(20,22,32,0.96), rgba(10,12,20,0.96));
+            border-radius: 24px;
+            padding: 40px 35px;
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: 0.4s;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .auth-box:hover {
+            border-color: rgba(124,92,255,0.15);
+            box-shadow: 0 20px 60px rgba(124,92,255,0.05);
+        }
+
+        .auth-box .logo-icon {
+            text-align: center;
+            font-size: 48px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .auth-box h2 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 5px;
+            color: #fff;
+            font-family: 'Rajdhani', 'Vazirmatn', sans-serif;
+            font-weight: 700;
+        }
+
+        .auth-box .sub {
+            text-align: center;
+            color: rgba(255,255,255,0.4);
+            font-size: 14px;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .tab-switch {
+            display: flex;
+            gap: 0;
+            margin-bottom: 28px;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.03);
+        }
+
+        .tab-switch button {
+            flex: 1;
+            padding: 13px;
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.4);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+        }
+
+        .tab-switch button.active {
+            background: rgba(124,92,255,0.15);
+            color: #fff;
+            box-shadow: inset 0 -2px 0 #7c5cff;
+        }
+
+        .tab-switch button:hover {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+        }
+
+        .form-group {
+            display: none;
+            animation: fadeSlide 0.4s ease;
+        }
+
+        .form-group.active {
+            display: block;
+        }
+
+        @keyframes fadeSlide {
+            0% { opacity: 0; transform: translateY(15px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group .input-wrap {
+            position: relative;
+            margin-bottom: 18px;
+        }
+
+        .form-group .input-wrap input {
+            width: 100%;
+            padding: 14px 16px;
+            padding-left: 50px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.04);
+            color: #fff;
+            font-size: 15px;
+            transition: 0.3s;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .form-group .input-wrap input:focus {
+            outline: none;
+            border-color: #7c5cff;
+            background: rgba(255,255,255,0.06);
+            box-shadow: 0 0 20px rgba(124,92,255,0.08);
+        }
+
+        .form-group .input-wrap input::placeholder {
+            color: rgba(255,255,255,0.2);
+        }
+
+        .form-group .input-wrap .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.2);
+            font-size: 18px;
+        }
+
+        .form-group .input-wrap .toggle-pass {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.25);
+            cursor: pointer;
+            font-size: 18px;
+            transition: 0.3s;
+            padding: 5px;
+        }
+
+        .form-group .input-wrap .toggle-pass:hover {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #7c5cff, #00eaff);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Rajdhani', 'Vazirmatn', sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 40px rgba(124,92,255,0.3);
+        }
+
+        .auth-btn:active {
+            transform: scale(0.97);
+        }
+
+        .auth-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .form-message {
+            display: none;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            font-size: 14px;
+            font-weight: 500;
+            animation: fadeSlide 0.3s ease;
+        }
+
+        .form-message.error {
+            display: block;
+            background: rgba(255, 60, 60, 0.1);
+            border: 1px solid rgba(255, 60, 60, 0.2);
+            color: #ff6b6b;
+        }
+
+        .form-message.success {
+            display: block;
+            background: rgba(0, 200, 83, 0.1);
+            border: 1px solid rgba(0, 200, 83, 0.2);
+            color: #00e676;
+        }
+
+        .auth-footer {
+            text-align: center;
+            color: rgba(255,255,255,0.3);
+            font-size: 13px;
+            margin-top: 22px;
+        }
+
+        .auth-footer a {
+            color: #00eaff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ====== استایل منو ====== */
+        .home-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            transition: 0.3s;
+            gap: 4px;
+            text-decoration: none;
+        }
+        .home-icon img {
+            width: 44px;
+            height: 44px;
+            filter: brightness(0) invert(1);
+            transition: 0.3s;
+            object-fit: contain;
+        }
+        .home-icon span {
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1.4;
+            font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+        }
+        .home-icon:hover {
+            color: #00eaff;
+            transform: translateY(-3px);
+        }
+        .home-icon:hover img {
+            filter: brightness(0) invert(1) drop-shadow(0 0 12px #00eaff);
+            transform: scale(1.08);
+        }
+
+        @media (max-width: 480px) {
+            .auth-box {
+                padding: 25px 18px;
+            }
+            .auth-box h2 {
+                font-size: 22px;
+            }
+            .form-group .input-wrap input {
+                padding: 12px 14px;
+                padding-left: 44px;
+                font-size: 14px;
+            }
+            .home-icon img {
+                width: 28px;
+                height: 28px;
+            }
+            .home-icon span {
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .auth-page {
+                padding: 30px 15px 50px;
+            }
+            .home-icon img {
+                width: 32px;
+                height: 32px;
+            }
+            .home-icon span {
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- پارتیکل -->
+<canvas id="particlesCanvas"></canvas>
+
+<!-- ====== نوار بالایی ====== -->
+<div class="top-mini-bar">
+    <div class="container mini-bar-flex">
+        <div class="right-links">
+            <a href="contact.html">📞 ارتباط با ما</a>
+        </div>
+        <div class="left-links" id="authLinks">
+            <a href="vrood.html" class="auth-link">🔐 ورود / ثبت‌نام</a>
+        </div>
+    </div>
+</div>
+
+<!-- ====== هدر ====== -->
+<header class="main-header">
+    <div class="container header-grid">
+        <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+        <div class="header-right">
+            <img src="https://uploadkon.ir/uploads/b57321_26-2147483648-210097.jpg" class="top-banner-logo hover-scale" alt="Logo">
+        </div>
+        <nav class="icon-menu" id="mainMenu">
+            <a href="index.html" class="home-icon">
+                <img src="https://uploadkon.ir/uploads/862016_26ChatGPT-Image-۲۷-خرداد-۱۴۰۵،-۰۱-۴۴-۲۱.png" alt="خانه">
+                <span>خانه</span>
+            </a>
+        </nav>
+        <div class="logo-section">
+            <span class="logo-text">𝐆𝐚𝐦𝐞𝐅𝐚𝐜𝐞</span>
+            <img src="https://uploadkon.ir/uploads/bde221_26574fd2be-c3db-41a9-ae44-d51c60f8c1f9.jpg" class="hover-scale" alt="Logo">
+        </div>
+    </div>
+</header>
+
+<!-- ====== صفحه ورود ====== -->
+<section class="auth-page">
+    <div class="auth-box">
+        <span class="logo-icon">🎮</span>
+        <h2>خوش اومدی!</h2>
+        <p class="sub">به جمع گیمرهای GameFace بپیوند</p>
+
+        <div class="tab-switch">
+            <button class="active" data-tab="login" onclick="switchTab('login')">🔐 ورود</button>
+            <button data-tab="register" onclick="switchTab('register')">📝 ثبت‌نام</button>
+        </div>
+
+        <div class="form-message" id="formMessage"></div>
+
+        <!-- ====== فرم ورود ====== -->
+        <div class="form-group active" id="loginForm">
+            <label>👤 نام کاربری</label>
+            <div class="input-wrap">
+                <input type="text" id="loginUser" placeholder="نام کاربری خود را وارد کن" autocomplete="username">
+                <span class="input-icon">👤</span>
+            </div>
+
+            <label>🔒 رمز عبور</label>
+            <div class="input-wrap">
+                <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+                <button class="toggle-pass" onclick="togglePass('loginPass', this)" type="button">👁️</button>
+            </div>
+
+            <button class="auth-btn" id="loginBtn" onclick="handleLogin()">🚀 ورود به GameFace</button>
+        </div>
+
+        <!-- ====== فرم ثبت‌نام ====== -->
+        <div class="form-group" id="registerForm">
+            <label>👤 نام کاربری</label>
+            <div class="input-wrap">
+                <input type="text" id="regUser" placeholder="یک نام کاربری انتخاب کن" autocomplete="username">
+                <span class="input-icon">👤</span>
+            </div>
+
+            <label>🔒 رمز عبور</label>
+            <div class="input-wrap">
+                <input type="password" id="regPass" placeholder="حداقل ۴ کاراکتر" autocomplete="new-password">
+                <button class="toggle-pass" onclick="togglePass('regPass', this)" type="button">👁️</button>
+            </div>
+
+            <label>🔒 تکرار رمز</label>
+            <div class="input-wrap">
+                <input type="password" id="regPass2" placeholder="تکرار رمز عبور" autocomplete="new-password">
+                <button class="toggle-pass" onclick="togglePass('regPass2', this)" type="button">👁️</button>
+            </div>
+
+            <button class="auth-btn" id="registerBtn" onclick="handleRegister()">✅ ثبت‌نام در GameFace</button>
+        </div>
+
+        <div class="auth-footer">
+            با ورود یا ثبت‌نام، <a href="#">قوانین</a> را می‌پذیرید.
+        </div>
+    </div>
+</section>
+
+<!-- ====== فوتر ====== -->
+<footer class="site-footer scroll-animate">
+    <div class="container footer-grid">
+        <div class="footer-box">
+            <h3>🎮 GameFace</h3>
+            <p>تیم دوبله گیمینگ با محتوای فارسی برای بازی‌های مختلف</p>
+            <div class="footer-social">
+                <a href="https://rubika.ir/GameFace" target="_blank" aria-label="روبیکا">📱</a>
+                <a href="https://www.aparat.com/c_tyu" target="_blank" aria-label="آپارات">🎬</a>
+            </div>
+        </div>
+        <div class="footer-box">
+            <h3>⚡ لینک‌های سریع</h3>
+            <ul>
+                <li><a href="index.html">🏠 صفحه اصلی</a></li>
+                <li><a href="video-dobleh.html">🎬 ویدیوهای دوبله</a></li>
+                <li><a href="mod-farsi.html">⬇️ مودهای بازی</a></li>
+                <li><a href="contact.html">📞 ارتباط با ما</a></li>
+            </ul>
+        </div>
+        <div class="footer-box">
+            <h3>📱 کانال روبیکا</h3>
+            <p>عضو شو و جدیدترین‌ها رو ببین</p>
+            <a href="https://rubika.ir/GameFace" class="rubika-btn" target="_blank">🚀 عضویت</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2026 <span>GameFace</span> - تمام حقوق محفوظ است.</p>
+    </div>
+</footer>
+
+<!-- ====== دکمه بازگشت ====== -->
+<button id="backToTop">↑</button>
+
+<script src="auth.js"></script>
+<script src="loader.js"></script>
+
+<script>
+// ============================================================
+// ====== توابع صفحه ورود ======
+// ============================================================
+
+function showMessage(text, type) {
+    const msg = document.getElementById('formMessage');
+    msg.className = 'form-message ' + type;
+    msg.textContent = text;
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.form-group').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-switch button').forEach(el => el.classList.remove('active'));
+    document.getElementById(tab + 'Form').classList.add('active');
+    document.querySelector(`.tab-switch button[data-tab="${tab}"]`).classList.add('active');
+    document.getElementById('formMessage').className = 'form-message';
+}
+
+function togglePass(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+    } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+    }
+}
+
+// ====== ثبت‌نام ======
+async function handleRegister() {
+    const user = document.getElementById('regUser').value.trim();
+    const pass = document.getElementById('regPass').value.trim();
+    const pass2 = document.getElementById('regPass2').value.trim();
+    const btn = document.getElementById('registerBtn');
+
+    if (!user || !pass || !pass2) {
+        showMessage('⚠️ لطفاً همه فیلدها را پر کن!', 'error');
+        return;
+    }
+
+    if (user.length < 3) {
+        showMessage('⚠️ نام کاربری حداقل ۳ کاراکتر باشد!', 'error');
+        return;
+    }
+
+    if (pass.length < 4) {
+        showMessage('⚠️ رمز عبور حداقل ۴ کاراکتر باشد!', 'error');
+        return;
+    }
+
+    if (pass !== pass2) {
+        showMessage('⚠️ رمزها با هم مطابقت ندارند!', 'error');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '⏳ در حال ثبت...';
+
+    const result = await GameFaceAuth.registerUser(user, pass);
+    
+    if (result.success) {
+        showMessage(result.message, 'success');
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1500);
+    } else {
+        showMessage(result.message, 'error');
+        btn.disabled = false;
+        btn.innerHTML = '✅ ثبت‌نام در GameFace';
+    }
+}
+
+// ====== ورود ======
+async function handleLogin() {
+    const user = document.getElementById('loginUser').value.trim();
+    const pass = document.getElementById('loginPass').value.trim();
+    const btn = document.getElementById('loginBtn');
+
+    if (!user || !pass) {
+        showMessage('⚠️ لطفاً نام کاربری و رمز را وارد کن!', 'error');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '⏳ در حال ورود...';
+
+    const result = await GameFaceAuth.loginUser(user, pass);
+    
+    if (result.success) {
+        showMessage(result.message, 'success');
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1500);
+    } else {
+        showMessage(result.message, 'error');
+        btn.disabled = false;
+        btn.innerHTML = '🚀 ورود به GameFace';
+    }
+}
+
+// ====== همبرگر ======
+document.getElementById('hamburgerBtn').addEventListener('click', function() {
+    document.getElementById('mainMenu').classList.toggle('open');
+});
+
+// ====== پارتیکل ======
+const canvas = document.getElementById('particlesCanvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+
+function resizeCanvas() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const particles = [];
+for (let i = 0; i < 25; i++) {
+    particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        size: Math.random() * 1.8 + 0.3,
+        speedX: (Math.random() - 0.5) * 0.3,
+        speedY: (Math.random() - 0.5) * 0.3,
+        hue: 220 + Math.random() * 60
+    });
+}
+
+function drawParticles() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        if (p.x < 0 || p.x > W) p.speedX *= -1;
+        if (p.y < 0 || p.y > H) p.speedY *= -1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, 0.2)`;
+        ctx.shadowColor = `hsla(${p.hue}, 80%, 60%, 0.08)`;
+        ctx.shadowBlur = 6;
+        ctx.fill();
+    });
+    requestAnimationFrame(drawParticles);
+}
+drawParticles();
+</script>
+
+</body>
+</html>

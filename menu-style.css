@@ -1,0 +1,316 @@
+/* ============================================================
+   menu-style.css - استایل‌های مشترک تمام صفحات
+   ============================================================ */
+
+/* ---------- استایل منوی خانه ---------- */
+.home-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    color: rgba(255,255,255,0.8);
+    transition: 0.3s;
+    gap: 4px;
+    text-decoration: none;
+}
+
+.home-icon img {
+    width: 44px;
+    height: 44px;
+    filter: brightness(0) invert(1);
+    transition: 0.3s;
+    object-fit: contain;
+}
+
+.home-icon span {
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.4;
+    font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+}
+
+.home-icon:hover {
+    color: #00eaff;
+    transform: translateY(-3px);
+}
+
+.home-icon:hover img {
+    filter: brightness(0) invert(1) drop-shadow(0 0 12px #00eaff);
+    transform: scale(1.08);
+}
+
+/* ---------- استایل کاربر در هدر ---------- */
+.user-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255,255,255,0.8);
+    font-size: 14px;
+    font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+}
+
+.user-status .user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c5cff, #00eaff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    border: 2px solid rgba(255,255,255,0.1);
+    transition: 0.3s;
+    flex-shrink: 0;
+}
+
+.user-status .user-avatar:hover {
+    border-color: #00eaff;
+    transform: scale(1.05);
+}
+
+.user-status .user-name {
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-status .logout-btn {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.5);
+    padding: 4px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 12px;
+    font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+}
+
+.user-status .logout-btn:hover {
+    border-color: #ff4444;
+    color: #ff4444;
+    background: rgba(255,68,68,0.05);
+}
+
+/* ---------- انیمیشن‌های مشترک ---------- */
+.scroll-animate {
+    opacity: 0;
+    transform: translateY(25px);
+    transition: all 0.5s ease;
+}
+
+.scroll-animate.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.hover-lift:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.hover-glow {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.hover-glow:hover {
+    border-color: rgba(124,92,255,0.3);
+    box-shadow: 0 0 25px rgba(124,92,255,0.08);
+}
+
+.hover-scale {
+    transition: transform 0.25s ease;
+    cursor: pointer;
+}
+
+.hover-scale:hover {
+    transform: scale(1.03);
+}
+
+.float-anim {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+}
+
+#backToTop {
+    transition: all 0.3s ease;
+}
+
+#backToTop:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 30px rgba(124,92,255,0.3);
+}
+
+/* ---------- استایل صفحه هیرو ---------- */
+.page-hero {
+    padding: 28px 0 18px;
+    background: radial-gradient(1200px 600px at 80% -10%, rgba(124,92,255,.45), transparent 60%),
+                radial-gradient(900px 500px at 10% 0%, rgba(0,229,255,.20), transparent 55%),
+                linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,0));
+    border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.page-hero h1 {
+    margin: 0 0 8px;
+    font-size: 26px;
+    font-weight: 800;
+    color: #fff;
+}
+
+.page-hero p {
+    margin: 0;
+    color: rgba(255,255,255,.75);
+    font-size: 14px;
+    line-height: 1.9;
+}
+
+/* ---------- باکس عضویت مشترک ---------- */
+.join-box {
+    padding: 70px 20px;
+}
+
+.join-container {
+    max-width: 900px;
+    margin: auto;
+    background: linear-gradient(145deg, rgba(20,22,32,0.95), rgba(10,12,20,0.95));
+    border-radius: 20px;
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: 0.4s;
+}
+
+.join-container:hover {
+    border-color: rgba(124,92,255,0.2);
+    box-shadow: 0 0 40px rgba(124,92,255,0.08);
+}
+
+.qr-box img {
+    width: 160px;
+    background: #fff;
+    padding: 8px;
+    border-radius: 12px;
+}
+
+.join-info h3 {
+    font-family: 'Rajdhani', 'Vazirmatn', sans-serif;
+    font-size: 24px;
+    margin-bottom: 8px;
+    color: #fff;
+    font-weight: 700;
+}
+
+.join-info p {
+    font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 18px;
+    font-weight: 300;
+}
+
+.rubika-id {
+    font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+    font-size: 16px;
+    margin-bottom: 18px;
+    color: rgba(255,255,255,0.7);
+}
+
+.rubika-id span {
+    color: #00eaff;
+    font-weight: 700;
+}
+
+.rubika-btn {
+    display: inline-block;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, #7c5cff, #00eaff);
+    color: #fff;
+    border-radius: 10px;
+    font-weight: 700;
+    transition: 0.3s;
+    font-family: 'Rajdhani', 'Vazirmatn', sans-serif;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+}
+
+.rubika-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 30px rgba(124,92,255,0.35);
+}
+
+/* ---------- ریسپانسیو ---------- */
+@media (max-width: 768px) {
+    .home-icon img {
+        width: 32px;
+        height: 32px;
+    }
+    .home-icon span {
+        font-size: 11px;
+    }
+    .join-container {
+        flex-direction: column-reverse;
+        text-align: center;
+        padding: 30px 20px;
+    }
+    .qr-box img {
+        width: 140px;
+    }
+    .page-hero h1 {
+        font-size: 22px;
+    }
+    .user-status .user-name {
+        max-width: 80px;
+        font-size: 13px;
+    }
+    .user-status .user-avatar {
+        width: 30px;
+        height: 30px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .home-icon img {
+        width: 28px;
+        height: 28px;
+    }
+    .home-icon span {
+        font-size: 10px;
+    }
+    .join-container {
+        padding: 20px 15px;
+    }
+    .join-info h3 {
+        font-size: 20px;
+    }
+    .user-status .user-name {
+        max-width: 60px;
+        font-size: 12px;
+    }
+    .user-status .user-avatar {
+        width: 26px;
+        height: 26px;
+        font-size: 11px;
+    }
+    .user-status .logout-btn {
+        font-size: 10px;
+        padding: 2px 8px;
+    }
+}

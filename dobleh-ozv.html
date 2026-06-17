@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>عضویت در تیم دوبله | GameFace</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="menu-style.css">
+<link rel="icon" href="https://uploadkon.ir/uploads/bde221_26574fd2be-c3db-41a9-ae44-d51c60f8c1f9.jpg">
+<style>
+    /* ====== استایل منو ====== */
+    .home-icon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        color: rgba(255,255,255,0.8);
+        transition: 0.3s;
+        gap: 4px;
+        text-decoration: none;
+    }
+    .home-icon img {
+        width: 44px;
+        height: 44px;
+        filter: brightness(0) invert(1);
+        transition: 0.3s;
+        object-fit: contain;
+    }
+    .home-icon span {
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.4;
+        font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+    }
+    .home-icon:hover {
+        color: #00eaff;
+        transform: translateY(-3px);
+    }
+    .home-icon:hover img {
+        filter: brightness(0) invert(1) drop-shadow(0 0 12px #00eaff);
+        transform: scale(1.08);
+    }
+
+    /* انیمیشن‌های حداقلی */
+    .scroll-animate {
+        opacity: 0;
+        transform: translateY(25px);
+        transition: all 0.5s ease;
+    }
+    .scroll-animate.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .hover-glow {
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+    }
+    .hover-glow:hover {
+        border-color: rgba(124,92,255,0.3);
+        box-shadow: 0 0 25px rgba(124,92,255,0.08);
+    }
+    .hover-scale {
+        transition: transform 0.25s ease;
+        cursor: pointer;
+    }
+    .hover-scale:hover {
+        transform: scale(1.03);
+    }
+    .float-anim {
+        animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-6px); }
+    }
+    #backToTop {
+        transition: all 0.3s ease;
+    }
+    #backToTop:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 30px rgba(124,92,255,0.3);
+    }
+    .page-hero {
+        padding: 28px 0 18px;
+        background: radial-gradient(1200px 600px at 80% -10%, rgba(124,92,255,.45), transparent 60%),
+                    radial-gradient(900px 500px at 10% 0%, rgba(0,229,255,.20), transparent 55%),
+                    linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,0));
+        border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .page-hero h1 {
+        margin: 0 0 8px;
+        font-size: 26px;
+        font-weight: 800;
+        color: #fff;
+    }
+    .page-hero p {
+        margin: 0;
+        color: rgba(255,255,255,.75);
+        font-size: 14px;
+        line-height: 1.9;
+    }
+
+    /* باکس عضویت */
+    .join-box {
+        padding: 70px 20px;
+    }
+    .join-container {
+        max-width: 900px;
+        margin: auto;
+        background: linear-gradient(145deg, rgba(20,22,32,0.95), rgba(10,12,20,0.95));
+        border-radius: 20px;
+        padding: 40px;
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        border: 1px solid rgba(255,255,255,0.06);
+        transition: 0.4s;
+    }
+    .join-container:hover {
+        border-color: rgba(124,92,255,0.2);
+        box-shadow: 0 0 40px rgba(124,92,255,0.08);
+    }
+    .qr-box img {
+        width: 160px;
+        background: #fff;
+        padding: 8px;
+        border-radius: 12px;
+    }
+    .join-info h3 {
+        font-family: 'Rajdhani', 'Vazirmatn', sans-serif;
+        font-size: 24px;
+        margin-bottom: 8px;
+        color: #fff;
+        font-weight: 700;
+    }
+    .join-info p {
+        font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+        color: rgba(255,255,255,0.6);
+        margin-bottom: 18px;
+        font-weight: 300;
+    }
+    .rubika-id {
+        font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+        font-size: 16px;
+        margin-bottom: 18px;
+        color: rgba(255,255,255,0.7);
+    }
+    .rubika-id span {
+        color: #00eaff;
+        font-weight: 700;
+    }
+    .rubika-btn {
+        display: inline-block;
+        padding: 12px 28px;
+        background: linear-gradient(135deg, #7c5cff, #00eaff);
+        color: #fff;
+        border-radius: 10px;
+        font-weight: 700;
+        transition: 0.3s;
+        font-family: 'Rajdhani', 'Vazirmatn', sans-serif;
+        letter-spacing: 0.5px;
+        text-decoration: none;
+    }
+    .rubika-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 30px rgba(124,92,255,0.35);
+    }
+
+    @media (max-width: 768px) {
+        .join-container {
+            flex-direction: column-reverse;
+            text-align: center;
+            padding: 30px 20px;
+        }
+        .qr-box img {
+            width: 140px;
+        }
+        .home-icon img {
+            width: 32px;
+            height: 32px;
+        }
+        .home-icon span {
+            font-size: 11px;
+        }
+        .page-hero h1 {
+            font-size: 22px;
+        }
+    }
+    @media (max-width: 480px) {
+        .home-icon img {
+            width: 28px;
+            height: 28px;
+        }
+        .home-icon span {
+            font-size: 10px;
+        }
+        .join-container {
+            padding: 20px 15px;
+        }
+        .join-info h3 {
+            font-size: 20px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<!-- پارتیکل -->
+<canvas id="particlesCanvas"></canvas>
+
+<!-- ====== نوار بالایی ====== -->
+<div class="top-mini-bar">
+    <div class="container mini-bar-flex">
+        <div class="right-links">
+            <a href="contact.html">📞 ارتباط با ما</a>
+        </div>
+        <div class="left-links" id="authLinks">
+            <a href="vrood.html">🔐 ورود / ثبت‌نام</a>
+        </div>
+    </div>
+</div>
+
+<!-- ====== هدر ====== -->
+<header class="main-header">
+    <div class="container header-grid">
+        <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+        <div class="header-right">
+            <img src="https://uploadkon.ir/uploads/b57321_26-2147483648-210097.jpg" class="top-banner-logo hover-scale" alt="Logo">
+        </div>
+
+        <!-- ====== منوی اصلی ====== -->
+        <nav class="icon-menu" id="mainMenu">
+            <a href="index.html" class="home-icon">
+                <img src="https://uploadkon.ir/uploads/862016_26ChatGPT-Image-۲۷-خرداد-۱۴۰۵،-۰۱-۴۴-۲۱.png" alt="خانه">
+                <span>خانه</span>
+            </a>
+        </nav>
+
+        <div class="logo-section">
+            <span class="logo-text">𝐆𝐚𝐦𝐞𝐅𝐚𝐜𝐞</span>
+            <img src="https://uploadkon.ir/uploads/bde221_26574fd2be-c3db-41a9-ae44-d51c60f8c1f9.jpg" class="hover-scale" alt="Logo">
+        </div>
+    </div>
+</header>
+
+<!-- ====== هیرو ====== -->
+<section class="page-hero">
+    <div class="container">
+        <h1>🎤 عضو شدن در تیم دوبله</h1>
+        <p>به تیم دوبله GameFace بپیوند و صداپیشه شو!</p>
+    </div>
+</section>
+
+<!-- ====== باکس عضویت ====== -->
+<section class="join-box scroll-animate">
+    <div class="join-container hover-glow">
+        <div class="qr-box float-anim">
+            <img src="https://uploadkon.ir/uploads/b8b821_26-2147483648-211880.jpg" alt="QR Rubika">
+        </div>
+        <div class="join-info">
+            <h3>🎯 عضویت در تیم دوبله</h3>
+            <p>برای عضویت در تیم دوبله GameFace، از طریق روبیکا به آیدی زیر پیام بده.</p>
+            <div class="rubika-id">آیدی روبیکا: <span>@Baba_Game</span></div>
+            <a href="https://rubika.ir/Baba_Game" class="rubika-btn" target="_blank">ورود به روبیکا</a>
+        </div>
+    </div>
+</section>
+
+<!-- ====== فوتر ====== -->
+<footer class="site-footer scroll-animate">
+    <div class="container footer-grid">
+        <div class="footer-box">
+            <h3>🎮 GameFace</h3>
+            <p>تیم دوبله گیمینگ با محتوای فارسی برای بازی‌های مختلف</p>
+            <div class="footer-social">
+                <a href="https://rubika.ir/GameFace" target="_blank" aria-label="روبیکا">📱</a>
+                <a href="https://www.aparat.com/c_tyu" target="_blank" aria-label="آپارات">🎬</a>
+            </div>
+        </div>
+        <div class="footer-box">
+            <h3>⚡ لینک‌های سریع</h3>
+            <ul>
+                <li><a href="index.html">🏠 صفحه اصلی</a></li>
+                <li><a href="video-dobleh.html">🎬 ویدیوهای دوبله</a></li>
+                <li><a href="mod-farsi.html">⬇️ مودهای بازی</a></li>
+                <li><a href="contact.html">📞 ارتباط با ما</a></li>
+            </ul>
+        </div>
+        <div class="footer-box">
+            <h3>📱 کانال روبیکا</h3>
+            <p>عضو شو و جدیدترین‌ها رو ببین</p>
+            <a href="https://rubika.ir/GameFace" class="rubika-btn" target="_blank">🚀 عضویت</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2026 <span>GameFace</span> - تمام حقوق محفوظ است.</p>
+    </div>
+</footer>
+
+<!-- ====== دکمه بازگشت ====== -->
+<button id="backToTop">↑</button>
+<script src="auth.js"></script>
+<script src="loader.js"></script>
+
+<script>
+// ====== همبرگر ======
+document.getElementById('hamburgerBtn').addEventListener('click', function() {
+    document.getElementById('mainMenu').classList.toggle('open');
+});
+
+// ====== انیمیشن اسکرول ======
+const scrollElements = document.querySelectorAll('.scroll-animate');
+const observerOptions = {
+    threshold: 0.15,
+    rootMargin: '0px 0px -30px 0px'
+};
+
+const scrollObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, observerOptions);
+
+scrollElements.forEach(el => scrollObserver.observe(el));
+
+// ====== بازگشت ======
+const backBtn = document.getElementById('backToTop');
+window.addEventListener('scroll', () => {
+    backBtn.style.display = window.scrollY > 400 ? 'flex' : 'none';
+});
+backBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// ====== پارتیکل ======
+const canvas = document.getElementById('particlesCanvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resizeCanvas() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const particles = [];
+for (let i = 0; i < 25; i++) {
+    particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        size: Math.random() * 1.8 + 0.3,
+        speedX: (Math.random() - 0.5) * 0.3,
+        speedY: (Math.random() - 0.5) * 0.3,
+        hue: 220 + Math.random() * 60
+    });
+}
+
+function drawParticles() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        if (p.x < 0 || p.x > W) p.speedX *= -1;
+        if (p.y < 0 || p.y > H) p.speedY *= -1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, 0.2)`;
+        ctx.shadowColor = `hsla(${p.hue}, 80%, 60%, 0.08)`;
+        ctx.shadowBlur = 6;
+        ctx.fill();
+    });
+    requestAnimationFrame(drawParticles);
+}
+drawParticles();
+</script>
+
+</body>
+</html>
