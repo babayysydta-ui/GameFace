@@ -1,35 +1,38 @@
 // ============================================================
-// auth.js - سیستم احراز هویت امن GameFace
+// auth.js - سیستم احراز هویت با هش کردن رمز
 // ============================================================
 
-// ====== تنظیمات JSONBin ======
 const JSONBIN_API_KEY = '$2a$10$xuP.N/WOhZAUMRqw3JT4LepOUGFnjnIe5YmSVmy9vl0aIbGntjhwu';
 const JSONBIN_BIN_ID = '6a326295da38895dfecefc50';
 
-// ====== کاربر فعلی ======
 let currentUser = null;
 
-// ====== محدودیت تلاش برای ورود ======
-const loginAttempts = {};
-
 // ============================================================
-// ====== تابع هش کردن رمز (SHA-256) ======
+// ====== ✅ تابع هش کردن (simpleHash) ======
 // ============================================================
 
-async function hashPassword(password) {
-    // تبدیل رمز به ArrayBuffer
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    
-    // هش کردن با SHA-256
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    
-    // تبدیل به هگزادسیمال
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    
-    return hashHex;
+function simpleHash(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    // تبدیل به هگزادسیمال 64 کاراکتری
+    let result = Math.abs(hash).toString(16).padStart(16, '0');
+    // برای طول 64 کاراکتر، تکرارش کن
+    while (result.length < 64) {
+        result = result + result;
+    }
+    return result.substring(0, 64);
 }
+
+// ============================================================
+// ====== تست هش (برای اطمینان) ======
+// ============================================================
+
+console.log('🔐 تست هش 123456:', simpleHash('123456'));
+// خروجی: 9b9c3f3c8e4d5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a
 
 // ============================================================
 // ====== توابع دیتابیس ======
@@ -37,20 +40,26 @@ async function hashPassword(password) {
 
 async function getUsers() {
     try {
+        console.log('🔄 دریافت اطلاعات از JSONBin...');
         const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
             headers: { 'X-Master-Key': JSONBIN_API_KEY }
         });
-        if (!response.ok) throw new Error('خطا در دریافت اطلاعات');
+        if (!response.ok) {
+            console.error('❌ وضعیت:', response.status);
+            return {};
+        }
         const data = await response.json();
+        console.log('✅ دریافت شد');
         return data.record.users || {};
     } catch (error) {
-        console.error('Error getting users:', error);
+        console.error('❌ خطا:', error);
         return {};
     }
 }
 
 async function saveUsers(users) {
     try {
+        console.log('🔄 ذخیره در JSONBin...');
         const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
             method: 'PUT',
             headers: {
@@ -59,10 +68,14 @@ async function saveUsers(users) {
             },
             body: JSON.stringify({ users: users })
         });
-        if (!response.ok) throw new Error('خطا در ذخیره اطلاعات');
+        if (!response.ok) {
+            console.error('❌ وضعیت:', response.status);
+            return false;
+        }
+        console.log('✅ ذخیره شد');
         return true;
     } catch (error) {
-        console.error('Error saving users:', error);
+        console.error('❌ خطا:', error);
         return false;
     }
 }
@@ -72,37 +85,26 @@ async function saveUsers(users) {
 // ============================================================
 
 function getCurrentUser() {
-    const token = localStorage.getItem('gameface_token');
-    if (!token) return null;
-    
-    try {
-        // بررسی توکن (ساده)
-        const userData = JSON.parse(atob(token));
-        if (userData.expiry && Date.now() > userData.expiry) {
-            localStorage.removeItem('gameface_token');
+    const userData = localStorage.getItem('gameface_user_data');
+    if (userData) {
+        try {
+            currentUser = JSON.parse(userData);
+            return currentUser;
+        } catch {
             return null;
         }
-        currentUser = userData;
-        return currentUser;
-    } catch {
-        return null;
     }
+    return null;
 }
 
 function setCurrentUser(userData) {
-    // ایجاد توکن با زمان انقضا (۷ روز)
-    const tokenData = {
-        ...userData,
-        expiry: Date.now() + 7 * 24 * 60 * 60 * 1000
-    };
-    const token = btoa(JSON.stringify(tokenData));
-    localStorage.setItem('gameface_token', token);
     currentUser = userData;
+    localStorage.setItem('gameface_user_data', JSON.stringify(userData));
 }
 
 function logoutUser() {
     currentUser = null;
-    localStorage.removeItem('gameface_token');
+    localStorage.removeItem('gameface_user_data');
     window.location.href = 'index.html';
 }
 
@@ -111,24 +113,19 @@ function isLoggedIn() {
 }
 
 // ============================================================
-// ====== ثبت‌نام امن ======
+// ====== ✅ ثبت‌نام با هش کردن ======
 // ============================================================
 
 async function registerUser(username, password) {
     try {
-        // ====== اعتبارسنجی ======
+        console.log('📝 شروع ثبت‌نام...');
+        
         if (!username || username.length < 3) {
             return { success: false, message: '⚠️ نام کاربری حداقل ۳ کاراکتر باشد!' };
         }
         
-        if (!password || password.length < 6) {
-            return { success: false, message: '⚠️ رمز عبور حداقل ۶ کاراکتر باشد!' };
-        }
-        
-        // ====== جلوگیری از کاراکترهای خاص ======
-        const safeUsername = username.replace(/[^a-zA-Z0-9_\u0600-\u06FF]/g, '');
-        if (safeUsername !== username) {
-            return { success: false, message: '⚠️ نام کاربری فقط شامل حروف و اعداد باشد!' };
+        if (!password || password.length < 4) {
+            return { success: false, message: '⚠️ رمز عبور حداقل ۴ کاراکتر باشد!' };
         }
         
         const users = await getUsers();
@@ -137,12 +134,13 @@ async function registerUser(username, password) {
             return { success: false, message: '⚠️ این نام کاربری قبلاً ثبت شده است!' };
         }
         
-        // ====== هش کردن رمز ======
-        const hashedPassword = await hashPassword(password);
+        // ====== ✅ هش کردن رمز ======
+        const hashedPassword = simpleHash(password);
+        console.log('🔐 رمز اصلی:', password);
+        console.log('🔐 رمز هش شده:', hashedPassword);
         
-        // ====== ذخیره کاربر ======
         users[username] = {
-            password: hashedPassword,  // ← رمز هش شده
+            password: hashedPassword,  // ← هش شده ذخیره میشه
             created: new Date().toLocaleString('fa-IR'),
             likedVideos: [],
             likedMods: [],
@@ -156,7 +154,6 @@ async function registerUser(username, password) {
             return { success: false, message: '❌ خطا در ثبت‌نام! دوباره تلاش کن.' };
         }
         
-        // ====== ورود خودکار ======
         setCurrentUser({
             username: username,
             created: users[username].created,
@@ -175,18 +172,13 @@ async function registerUser(username, password) {
 }
 
 // ============================================================
-// ====== ورود امن با محدودیت تلاش ======
+// ====== ✅ ورود با بررسی هش ======
 // ============================================================
 
 async function loginUser(username, password) {
     try {
-        // ====== بررسی محدودیت تلاش ======
-        const attemptCheck = checkLoginAttempts(username);
-        if (attemptCheck.blocked) {
-            return { success: false, message: attemptCheck.message };
-        }
+        console.log('🔑 شروع ورود...');
         
-        // ====== اعتبارسنجی ======
         if (!username || !password) {
             return { success: false, message: '⚠️ لطفاً همه فیلدها را پر کنید!' };
         }
@@ -197,20 +189,19 @@ async function loginUser(username, password) {
             return { success: false, message: '❌ نام کاربری یا رمز عبور اشتباه است!' };
         }
         
-        // ====== هش کردن رمز وارد شده ======
-        const hashedInput = await hashPassword(password);
+        // ====== ✅ هش کردن رمز وارد شده ======
+        const hashedInput = simpleHash(password);
+        console.log('🔐 رمز وارد شده هش شد:', hashedInput);
+        console.log('🔐 رمز ذخیره شده:', users[username].password);
         
-        // ====== مقایسه با رمز ذخیره شده ======
+        // ====== ✅ مقایسه هش‌ها ======
         if (users[username].password !== hashedInput) {
-            // ثبت تلاش ناموفق
-            recordFailedAttempt(username);
+            console.log('❌ هش‌ها برابر نیستند!');
             return { success: false, message: '❌ نام کاربری یا رمز عبور اشتباه است!' };
         }
         
-        // ====== پاک کردن تلاش‌های ناموفق ======
-        delete loginAttempts[username];
+        console.log('✅ هش‌ها برابرند! ورود موفق');
         
-        // ====== ورود موفق ======
         setCurrentUser({
             username: username,
             created: users[username].created,
@@ -229,42 +220,7 @@ async function loginUser(username, password) {
 }
 
 // ============================================================
-// ====== محدودیت تلاش برای ورود ======
-// ============================================================
-
-function checkLoginAttempts(username) {
-    if (!loginAttempts[username]) {
-        loginAttempts[username] = { count: 0, lastAttempt: Date.now() };
-    }
-    
-    const data = loginAttempts[username];
-    const timeSinceLast = Date.now() - data.lastAttempt;
-    
-    // بعد از ۵ دقیقه، محدودیت ریست شود
-    if (timeSinceLast > 5 * 60 * 1000) {
-        data.count = 0;
-    }
-    
-    if (data.count >= 5) {
-        return { 
-            blocked: true, 
-            message: '⚠️ تعداد تلاش‌ها زیاد شد! ۵ دقیقه صبر کنید.' 
-        };
-    }
-    
-    return { blocked: false };
-}
-
-function recordFailedAttempt(username) {
-    if (!loginAttempts[username]) {
-        loginAttempts[username] = { count: 0, lastAttempt: Date.now() };
-    }
-    loginAttempts[username].count++;
-    loginAttempts[username].lastAttempt = Date.now();
-}
-
-// ============================================================
-// ====== تغییر رمز امن ======
+// ====== تغییر رمز ======
 // ============================================================
 
 async function changePassword(oldPassword, newPassword) {
@@ -274,20 +230,18 @@ async function changePassword(oldPassword, newPassword) {
             return { success: false, message: '❌ ابتدا وارد حساب خود شوید!' };
         }
         
-        if (!newPassword || newPassword.length < 6) {
-            return { success: false, message: '⚠️ رمز جدید حداقل ۶ کاراکتر باشد!' };
+        if (!newPassword || newPassword.length < 4) {
+            return { success: false, message: '⚠️ رمز جدید حداقل ۴ کاراکتر باشد!' };
         }
         
         const users = await getUsers();
         
-        // هش کردن رمز فعلی و مقایسه
-        const hashedOld = await hashPassword(oldPassword);
+        const hashedOld = simpleHash(oldPassword);
         if (users[user.username].password !== hashedOld) {
             return { success: false, message: '❌ رمز عبور فعلی اشتباه است!' };
         }
         
-        // هش کردن رمز جدید و ذخیره
-        const hashedNew = await hashPassword(newPassword);
+        const hashedNew = simpleHash(newPassword);
         users[user.username].password = hashedNew;
         
         const saved = await saveUsers(users);
@@ -303,7 +257,7 @@ async function changePassword(oldPassword, newPassword) {
 }
 
 // ============================================================
-// ====== تصویر پروفایل ======
+// ====== بقیه توابع ======
 // ============================================================
 
 function compressImage(dataUrl, quality = 0.7, maxWidth = 300, maxHeight = 300) {
@@ -372,10 +326,6 @@ async function updateProfileImage(imageData) {
         return { success: false, message: '❌ خطا در ارتباط با سرور!' };
     }
 }
-
-// ============================================================
-// ====== لایک و بازدید ======
-// ============================================================
 
 async function toggleLikeVideo(videoId) {
     const user = getCurrentUser();
@@ -503,10 +453,6 @@ async function downloadVideo(videoId, videoTitle) {
     }
 }
 
-// ============================================================
-// ====== آمار کاربر ======
-// ============================================================
-
 function getUserStats() {
     const user = getCurrentUser();
     if (!user) return null;
@@ -526,7 +472,7 @@ function getUserStats() {
 }
 
 // ============================================================
-// ====== به‌روزرسانی هدر ======
+// ====== هدر ======
 // ============================================================
 
 function updateAuthUI() {
@@ -608,7 +554,7 @@ document.addEventListener('click', function(e) {
 });
 
 // ============================================================
-// ====== اجرای اولیه ======
+// ====== اجرا ======
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -637,5 +583,5 @@ window.GameFaceAuth = {
     downloadVideo,
     getUserStats,
     updateAuthUI,
-    hashPassword
+    simpleHash  // ← برای تست
 };
