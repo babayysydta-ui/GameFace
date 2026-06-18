@@ -1,27 +1,34 @@
 // ============================================================
-// auth.js - سیستم احراز هویت کامل با کد امنیتی
+// auth.js - سیستم احراز هویت امن GameFace
 // ============================================================
 
+// ====== تنظیمات JSONBin ======
 const JSONBIN_API_KEY = '$2a$10$xuP.N/WOhZAUMRqw3JT4LepOUGFnjnIe5YmSVmy9vl0aIbGntjhwu';
 const JSONBIN_BIN_ID = '6a326295da38895dfecefc50';
 
+// ====== کاربر فعلی ======
 let currentUser = null;
+
+// ====== محدودیت تلاش برای ورود ======
 const loginAttempts = {};
-const resetCodes = {};
 
 // ============================================================
-// ====== تابع هش کردن ======
+// ====== تابع هش کردن رمز (SHA-256) ======
 // ============================================================
 
-function simpleHash(str) {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash;
-    }
-    return Math.abs(hash).toString(16).padStart(8, '0') + 
-           (hash >>> 0).toString(16).padStart(8, '0');
+async function hashPassword(password) {
+    // تبدیل رمز به ArrayBuffer
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    
+    // هش کردن با SHA-256
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    
+    // تبدیل به هگزادسیمال
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    
+    return hashHex;
 }
 
 // ============================================================
@@ -30,26 +37,20 @@ function simpleHash(str) {
 
 async function getUsers() {
     try {
-        console.log('🔄 دریافت اطلاعات از JSONBin...');
         const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
             headers: { 'X-Master-Key': JSONBIN_API_KEY }
         });
-        if (!response.ok) {
-            console.error('❌ وضعیت:', response.status);
-            return {};
-        }
+        if (!response.ok) throw new Error('خطا در دریافت اطلاعات');
         const data = await response.json();
-        console.log('✅ دریافت شد');
         return data.record.users || {};
     } catch (error) {
-        console.error('❌ خطا:', error);
+        console.error('Error getting users:', error);
         return {};
     }
 }
 
 async function saveUsers(users) {
     try {
-        console.log('🔄 ذخیره در JSONBin...');
         const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
             method: 'PUT',
             headers: {
@@ -58,14 +59,10 @@ async function saveUsers(users) {
             },
             body: JSON.stringify({ users: users })
         });
-        if (!response.ok) {
-            console.error('❌ وضعیت:', response.status);
-            return false;
-        }
-        console.log('✅ ذخیره شد');
+        if (!response.ok) throw new Error('خطا در ذخیره اطلاعات');
         return true;
     } catch (error) {
-        console.error('❌ خطا:', error);
+        console.error('Error saving users:', error);
         return false;
     }
 }
@@ -75,26 +72,37 @@ async function saveUsers(users) {
 // ============================================================
 
 function getCurrentUser() {
-    const userData = localStorage.getItem('gameface_user_data');
-    if (userData) {
-        try {
-            currentUser = JSON.parse(userData);
-            return currentUser;
-        } catch {
+    const token = localStorage.getItem('gameface_token');
+    if (!token) return null;
+    
+    try {
+        // بررسی توکن (ساده)
+        const userData = JSON.parse(atob(token));
+        if (userData.expiry && Date.now() > userData.expiry) {
+            localStorage.removeItem('gameface_token');
             return null;
         }
+        currentUser = userData;
+        return currentUser;
+    } catch {
+        return null;
     }
-    return null;
 }
 
 function setCurrentUser(userData) {
+    // ایجاد توکن با زمان انقضا (۷ روز)
+    const tokenData = {
+        ...userData,
+        expiry: Date.now() + 7 * 24 * 60 * 60 * 1000
+    };
+    const token = btoa(JSON.stringify(tokenData));
+    localStorage.setItem('gameface_token', token);
     currentUser = userData;
-    localStorage.setItem('gameface_user_data', JSON.stringify(userData));
 }
 
 function logoutUser() {
     currentUser = null;
-    localStorage.removeItem('gameface_user_data');
+    localStorage.removeItem('gameface_token');
     window.location.href = 'index.html';
 }
 
@@ -103,169 +111,24 @@ function isLoggedIn() {
 }
 
 // ============================================================
-// ====== ✅ کد امنیتی تصویری ======
+// ====== ثبت‌نام امن ======
 // ============================================================
 
-function generateCaptcha() {
-    const num1 = Math.floor(Math.random() * 9) + 1;
-    const num2 = Math.floor(Math.random() * 10);
-    const num3 = Math.floor(Math.random() * 10);
-    const num4 = Math.floor(Math.random() * 10);
-    const num5 = Math.floor(Math.random() * 10);
-    const num6 = Math.floor(Math.random() * 10);
-    
-    let code = num1.toString() + num2.toString() + num3.toString() + num4.toString();
-    
-    if (Math.random() > 0.5) {
-        code = code + num5.toString();
-    }
-    if (Math.random() > 0.7) {
-        code = code + num6.toString();
-    }
-    
-    return code;
-}
-
-function drawCaptchaOnCanvas(canvas, code) {
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
-    const width = 200;
-    const height = 60;
-    
-    canvas.width = width;
-    canvas.height = height;
-    
-    // پس‌زمینه روشن
-    const gradient = ctx.createLinearGradient(0, 0, width, height);
-    gradient.addColorStop(0, '#e8ecf1');
-    gradient.addColorStop(0.5, '#f5f7fa');
-    gradient.addColorStop(1, '#dce1e8');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
-    
-    // خطوط نویز
-    for (let i = 0; i < 12; i++) {
-        ctx.beginPath();
-        ctx.moveTo(Math.random() * width, Math.random() * height);
-        ctx.lineTo(Math.random() * width, Math.random() * height);
-        ctx.strokeStyle = `rgba(80, 80, 120, ${0.08 + Math.random() * 0.12})`;
-        ctx.lineWidth = 0.5 + Math.random() * 1.5;
-        ctx.stroke();
-    }
-    
-    // نقطه‌های نویز
-    for (let i = 0; i < 100; i++) {
-        ctx.fillStyle = `rgba(40, 40, 80, ${0.05 + Math.random() * 0.15})`;
-        ctx.beginPath();
-        ctx.arc(Math.random() * width, Math.random() * height, 0.5 + Math.random() * 1.5, 0, Math.PI * 2);
-        ctx.fill();
-    }
-    
-    // نوشتن اعداد
-    const chars = code.split('');
-    const totalWidth = chars.length * 34;
-    const startX = (width - totalWidth) / 2 + 10;
-    
-    const colors = ['#1a1a2e', '#16213e', '#0f3460', '#2d1b69', '#4a1a6b', '#1b263b', '#3a0ca3', '#4361ee'];
-    
-    chars.forEach((char, index) => {
-        const x = startX + index * 34 + Math.random() * 6;
-        const y = 26 + Math.random() * 22;
-        const rotation = (Math.random() - 0.5) * 0.5;
-        const fontSize = 26 + Math.random() * 12;
-        
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(rotation);
-        
-        const color = colors[index % colors.length];
-        ctx.fillStyle = color;
-        ctx.shadowColor = 'rgba(0,0,0,0.08)';
-        ctx.shadowBlur = 4;
-        
-        ctx.font = `bold ${fontSize}px Arial, 'Vazirmatn', Tahoma, sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(char, 0, 0);
-        
-        ctx.shadowBlur = 0;
-        ctx.strokeStyle = `rgba(40, 40, 80, 0.1)`;
-        ctx.lineWidth = 0.8;
-        ctx.beginPath();
-        ctx.moveTo(-12, 8 + Math.random() * 4);
-        ctx.lineTo(12, 8 + Math.random() * 4);
-        ctx.stroke();
-        
-        ctx.restore();
-    });
-    
-    // خطوط اعوجاج
-    for (let i = 0; i < 6; i++) {
-        ctx.beginPath();
-        const startX2 = 5 + Math.random() * (width - 10);
-        const startY2 = 5 + Math.random() * (height - 10);
-        ctx.moveTo(startX2, startY2);
-        ctx.quadraticCurveTo(
-            startX2 + Math.random() * 60 - 30,
-            startY2 + Math.random() * 30 - 15,
-            startX2 + Math.random() * 60 - 30,
-            startY2 + Math.random() * 30 - 15
-        );
-        ctx.strokeStyle = `rgba(40, 40, 80, 0.06)`;
-        ctx.lineWidth = 0.8 + Math.random() * 1.2;
-        ctx.stroke();
-    }
-    
-    // حاشیه
-    ctx.strokeStyle = 'rgba(124,92,255,0.15)';
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(2, 2, width - 4, height - 4);
-}
-
-function refreshCaptcha() {
-    const code = generateCaptcha();
-    const canvas = document.getElementById('captchaCanvas');
-    if (canvas) {
-        drawCaptchaOnCanvas(canvas, code);
-    }
-    window.currentCaptcha = code;
-    console.log('🔐 کد امنیتی ورود:', code);
-    return code;
-}
-
-function refreshCaptcha2() {
-    const code = generateCaptcha();
-    const canvas = document.getElementById('captchaCanvas2');
-    if (canvas) {
-        drawCaptchaOnCanvas(canvas, code);
-    }
-    window.currentCaptcha2 = code;
-    console.log('🔐 کد امنیتی ثبت‌نام:', code);
-    return code;
-}
-
-// ============================================================
-// ====== ✅ ثبت‌نام با بررسی کد امنیتی ======
-// ============================================================
-
-async function registerUser(username, password, captcha) {
+async function registerUser(username, password) {
     try {
-        console.log('📝 ثبت‌نام جدید...');
-        console.log('🔐 کد وارد شده:', captcha);
-        console.log('🔐 کد صحیح:', window.currentCaptcha2);
-        
-        // ====== بررسی کد امنیتی ======
-        if (!captcha || captcha !== window.currentCaptcha2) {
-            return { success: false, message: '⚠️ کد امنیتی اشتباه است!', refresh: true };
-        }
-        
+        // ====== اعتبارسنجی ======
         if (!username || username.length < 3) {
             return { success: false, message: '⚠️ نام کاربری حداقل ۳ کاراکتر باشد!' };
         }
         
-        if (!password || password.length < 4) {
-            return { success: false, message: '⚠️ رمز عبور حداقل ۴ کاراکتر باشد!' };
+        if (!password || password.length < 6) {
+            return { success: false, message: '⚠️ رمز عبور حداقل ۶ کاراکتر باشد!' };
+        }
+        
+        // ====== جلوگیری از کاراکترهای خاص ======
+        const safeUsername = username.replace(/[^a-zA-Z0-9_\u0600-\u06FF]/g, '');
+        if (safeUsername !== username) {
+            return { success: false, message: '⚠️ نام کاربری فقط شامل حروف و اعداد باشد!' };
         }
         
         const users = await getUsers();
@@ -274,10 +137,12 @@ async function registerUser(username, password, captcha) {
             return { success: false, message: '⚠️ این نام کاربری قبلاً ثبت شده است!' };
         }
         
-        const hashedPassword = simpleHash(password);
+        // ====== هش کردن رمز ======
+        const hashedPassword = await hashPassword(password);
         
+        // ====== ذخیره کاربر ======
         users[username] = {
-            password: hashedPassword,
+            password: hashedPassword,  // ← رمز هش شده
             created: new Date().toLocaleString('fa-IR'),
             likedVideos: [],
             likedMods: [],
@@ -288,9 +153,10 @@ async function registerUser(username, password, captcha) {
         
         const saved = await saveUsers(users);
         if (!saved) {
-            return { success: false, message: '❌ خطا در ذخیره اطلاعات!' };
+            return { success: false, message: '❌ خطا در ثبت‌نام! دوباره تلاش کن.' };
         }
         
+        // ====== ورود خودکار ======
         setCurrentUser({
             username: username,
             created: users[username].created,
@@ -301,30 +167,26 @@ async function registerUser(username, password, captcha) {
             profileImage: ''
         });
         
-        window.currentCaptcha2 = null;
-        
         return { success: true, message: '✅ ثبت‌نام موفق! خوش اومدی 🎮' };
     } catch (error) {
-        console.error('❌ Register error:', error);
-        return { success: false, message: '❌ خطا در ارتباط با سرور!', refresh: true };
+        console.error('Register error:', error);
+        return { success: false, message: '❌ خطا در ارتباط با سرور!' };
     }
 }
 
 // ============================================================
-// ====== ✅ ورود با بررسی کد امنیتی ======
+// ====== ورود امن با محدودیت تلاش ======
 // ============================================================
 
-async function loginUser(username, password, captcha) {
+async function loginUser(username, password) {
     try {
-        console.log('🔑 ورود کاربر...');
-        console.log('🔐 کد وارد شده:', captcha);
-        console.log('🔐 کد صحیح:', window.currentCaptcha);
-        
-        // ====== بررسی کد امنیتی ======
-        if (!captcha || captcha !== window.currentCaptcha) {
-            return { success: false, message: '⚠️ کد امنیتی اشتباه است!', refresh: true };
+        // ====== بررسی محدودیت تلاش ======
+        const attemptCheck = checkLoginAttempts(username);
+        if (attemptCheck.blocked) {
+            return { success: false, message: attemptCheck.message };
         }
         
+        // ====== اعتبارسنجی ======
         if (!username || !password) {
             return { success: false, message: '⚠️ لطفاً همه فیلدها را پر کنید!' };
         }
@@ -335,12 +197,20 @@ async function loginUser(username, password, captcha) {
             return { success: false, message: '❌ نام کاربری یا رمز عبور اشتباه است!' };
         }
         
-        const hashedInput = simpleHash(password);
+        // ====== هش کردن رمز وارد شده ======
+        const hashedInput = await hashPassword(password);
         
+        // ====== مقایسه با رمز ذخیره شده ======
         if (users[username].password !== hashedInput) {
+            // ثبت تلاش ناموفق
+            recordFailedAttempt(username);
             return { success: false, message: '❌ نام کاربری یا رمز عبور اشتباه است!' };
         }
         
+        // ====== پاک کردن تلاش‌های ناموفق ======
+        delete loginAttempts[username];
+        
+        // ====== ورود موفق ======
         setCurrentUser({
             username: username,
             created: users[username].created,
@@ -351,17 +221,50 @@ async function loginUser(username, password, captcha) {
             profileImage: users[username].profileImage || ''
         });
         
-        window.currentCaptcha = null;
-        
         return { success: true, message: '✅ ورود موفق! خوش اومدی 🎮' };
     } catch (error) {
-        console.error('❌ Login error:', error);
-        return { success: false, message: '❌ خطا در ارتباط با سرور!', refresh: true };
+        console.error('Login error:', error);
+        return { success: false, message: '❌ خطا در ارتباط با سرور!' };
     }
 }
 
 // ============================================================
-// ====== بقیه توابع ======
+// ====== محدودیت تلاش برای ورود ======
+// ============================================================
+
+function checkLoginAttempts(username) {
+    if (!loginAttempts[username]) {
+        loginAttempts[username] = { count: 0, lastAttempt: Date.now() };
+    }
+    
+    const data = loginAttempts[username];
+    const timeSinceLast = Date.now() - data.lastAttempt;
+    
+    // بعد از ۵ دقیقه، محدودیت ریست شود
+    if (timeSinceLast > 5 * 60 * 1000) {
+        data.count = 0;
+    }
+    
+    if (data.count >= 5) {
+        return { 
+            blocked: true, 
+            message: '⚠️ تعداد تلاش‌ها زیاد شد! ۵ دقیقه صبر کنید.' 
+        };
+    }
+    
+    return { blocked: false };
+}
+
+function recordFailedAttempt(username) {
+    if (!loginAttempts[username]) {
+        loginAttempts[username] = { count: 0, lastAttempt: Date.now() };
+    }
+    loginAttempts[username].count++;
+    loginAttempts[username].lastAttempt = Date.now();
+}
+
+// ============================================================
+// ====== تغییر رمز امن ======
 // ============================================================
 
 async function changePassword(oldPassword, newPassword) {
@@ -371,18 +274,20 @@ async function changePassword(oldPassword, newPassword) {
             return { success: false, message: '❌ ابتدا وارد حساب خود شوید!' };
         }
         
-        if (!newPassword || newPassword.length < 4) {
-            return { success: false, message: '⚠️ رمز جدید حداقل ۴ کاراکتر باشد!' };
+        if (!newPassword || newPassword.length < 6) {
+            return { success: false, message: '⚠️ رمز جدید حداقل ۶ کاراکتر باشد!' };
         }
         
         const users = await getUsers();
         
-        const hashedOld = simpleHash(oldPassword);
+        // هش کردن رمز فعلی و مقایسه
+        const hashedOld = await hashPassword(oldPassword);
         if (users[user.username].password !== hashedOld) {
             return { success: false, message: '❌ رمز عبور فعلی اشتباه است!' };
         }
         
-        const hashedNew = simpleHash(newPassword);
+        // هش کردن رمز جدید و ذخیره
+        const hashedNew = await hashPassword(newPassword);
         users[user.username].password = hashedNew;
         
         const saved = await saveUsers(users);
@@ -393,47 +298,6 @@ async function changePassword(oldPassword, newPassword) {
         return { success: true, message: '✅ رمز عبور با موفقیت تغییر کرد!' };
     } catch (error) {
         console.error('Change password error:', error);
-        return { success: false, message: '❌ خطا در ارتباط با سرور!' };
-    }
-}
-
-async function changeUsername(newUsername) {
-    try {
-        const user = getCurrentUser();
-        if (!user) {
-            return { success: false, message: '❌ ابتدا وارد حساب خود شوید!' };
-        }
-        
-        if (!newUsername || newUsername.length < 3) {
-            return { success: false, message: '⚠️ نام کاربری حداقل ۳ کاراکتر باشد!' };
-        }
-        
-        const safeUser = newUsername.replace(/[^a-zA-Z0-9_\u0600-\u06FF]/g, '');
-        if (safeUser !== newUsername) {
-            return { success: false, message: '⚠️ نام کاربری فقط شامل حروف و اعداد باشد!' };
-        }
-        
-        const users = await getUsers();
-        
-        if (users[newUsername] && newUsername !== user.username) {
-            return { success: false, message: '⚠️ این نام کاربری قبلاً ثبت شده است!' };
-        }
-        
-        const userData = users[user.username];
-        delete users[user.username];
-        users[newUsername] = userData;
-        
-        const saved = await saveUsers(users);
-        if (!saved) {
-            return { success: false, message: 'خطا در تغییر نام!' };
-        }
-        
-        user.username = newUsername;
-        setCurrentUser(user);
-        
-        return { success: true, message: '✅ نام کاربری با موفقیت تغییر کرد!' };
-    } catch (error) {
-        console.error('Change username error:', error);
         return { success: false, message: '❌ خطا در ارتباط با سرور!' };
     }
 }
@@ -662,111 +526,7 @@ function getUserStats() {
 }
 
 // ============================================================
-// ====== سیستم بازیابی رمز ======
-// ============================================================
-
-function generateResetCode() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-async function requestPasswordReset(phone) {
-    try {
-        const users = await getUsers();
-        
-        let foundUsername = null;
-        for (const [username, data] of Object.entries(users)) {
-            if (data.phone === phone) {
-                foundUsername = username;
-                break;
-            }
-        }
-        
-        if (!foundUsername) {
-            return { success: false, message: '❌ این شماره تلفن در سیستم ثبت نشده است!' };
-        }
-        
-        const code = generateResetCode();
-        
-        resetCodes[phone] = {
-            code: code,
-            username: foundUsername,
-            expires: Date.now() + 5 * 60 * 1000
-        };
-        
-        console.log(`📱 کد تایید برای ${phone}: ${code}`);
-        
-        return { 
-            success: true, 
-            message: '✅ کد تایید ارسال شد!',
-            code: code
-        };
-    } catch (error) {
-        console.error('Request reset error:', error);
-        return { success: false, message: '❌ خطا در ارسال کد!' };
-    }
-}
-
-async function verifyResetCode(phone, code) {
-    try {
-        const resetData = resetCodes[phone];
-        
-        if (!resetData) {
-            return { success: false, message: '❌ کد منقضی شده یا وجود ندارد!' };
-        }
-        
-        if (Date.now() > resetData.expires) {
-            delete resetCodes[phone];
-            return { success: false, message: '❌ کد منقضی شده است!' };
-        }
-        
-        if (resetData.code !== code) {
-            return { success: false, message: '❌ کد وارد شده اشتباه است!' };
-        }
-        
-        return { 
-            success: true, 
-            message: '✅ کد تایید شد!',
-            username: resetData.username
-        };
-    } catch (error) {
-        console.error('Verify code error:', error);
-        return { success: false, message: '❌ خطا در تایید کد!' };
-    }
-}
-
-async function resetPassword(phone, code, newPassword) {
-    try {
-        const verifyResult = await verifyResetCode(phone, code);
-        if (!verifyResult.success) {
-            return verifyResult;
-        }
-        
-        const username = verifyResult.username;
-        
-        if (!newPassword || newPassword.length < 4) {
-            return { success: false, message: '⚠️ رمز جدید حداقل ۴ کاراکتر باشد!' };
-        }
-        
-        const users = await getUsers();
-        const hashedNew = simpleHash(newPassword);
-        users[username].password = hashedNew;
-        
-        const saved = await saveUsers(users);
-        if (!saved) {
-            return { success: false, message: 'خطا در تغییر رمز!' };
-        }
-        
-        delete resetCodes[phone];
-        
-        return { success: true, message: '✅ رمز عبور با موفقیت تغییر کرد!' };
-    } catch (error) {
-        console.error('Reset password error:', error);
-        return { success: false, message: '❌ خطا در تغییر رمز!' };
-    }
-}
-
-// ============================================================
-// ====== هدر ======
+// ====== به‌روزرسانی هدر ======
 // ============================================================
 
 function updateAuthUI() {
@@ -801,10 +561,6 @@ function updateAuthUI() {
                     <a href="profile.html" class="menu-item">
                         <span class="icon">🖼️</span>
                         تغییر پروفایل
-                    </a>
-                    <a href="profile.html" class="menu-item">
-                        <span class="icon">✏️</span>
-                        تغییر نام کاربری
                     </a>
                     <a href="profile.html" class="menu-item">
                         <span class="icon">🔒</span>
@@ -857,16 +613,6 @@ document.addEventListener('click', function(e) {
 
 document.addEventListener('DOMContentLoaded', function() {
     updateAuthUI();
-    
-    // تازه کردن کد امنیتی
-    setTimeout(() => {
-        if (document.getElementById('captchaCanvas')) {
-            refreshCaptcha();
-        }
-        if (document.getElementById('captchaCanvas2')) {
-            refreshCaptcha2();
-        }
-    }, 300);
 });
 
 // ============================================================
@@ -883,7 +629,6 @@ window.GameFaceAuth = {
     registerUser,
     loginUser,
     changePassword,
-    changeUsername,
     updateProfileImage,
     compressImage,
     toggleLikeVideo,
@@ -892,11 +637,9 @@ window.GameFaceAuth = {
     downloadVideo,
     getUserStats,
     updateAuthUI,
-    refreshCaptcha,
-    refreshCaptcha2,
-    requestPasswordReset,
-    verifyResetCode,
-    resetPassword,
-    generateCaptcha,
-    drawCaptchaOnCanvas
+    hashPassword
 };
+
+
+
+
