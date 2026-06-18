@@ -67,7 +67,21 @@
         box-shadow: 0 0 20px rgba(124,92,255,0.4);
     }
     .profile-info h2 { color: #fff; font-size: 24px; margin-bottom: 4px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .profile-info p { color: rgba(255,255,255,0.4); font-size: 14px; }
+    .profile-info p { color: rgba(255,255,255,0.4); font-size: 14px; margin-bottom: 3px; }
+    .profile-info .phone-display {
+        color: rgba(255,255,255,0.3);
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 4px;
+    }
+    .profile-info .phone-display span {
+        color: #00eaff;
+        font-weight: 600;
+        direction: ltr;
+        display: inline-block;
+    }
     .profile-stats {
         display: grid; grid-template-columns: repeat(4, 1fr);
         gap: 15px; padding: 20px 0;
@@ -321,17 +335,6 @@
         margin: 0 auto;
     }
 
-    /* ====== استایل منو ====== */
-    .home-icon {
-        display: flex; flex-direction: column; align-items: center;
-        text-align: center; color: rgba(255,255,255,0.8);
-        transition: 0.3s; gap: 4px; text-decoration: none;
-    }
-    .home-icon img { width: 44px; height: 44px; filter: brightness(0) invert(1); transition: 0.3s; object-fit: contain; }
-    .home-icon span { font-size: 12px; font-weight: 700; line-height: 1.4; font-family: 'Vazirmatn', 'Tahoma', sans-serif; }
-    .home-icon:hover { color: #00eaff; transform: translateY(-3px); }
-    .home-icon:hover img { filter: brightness(0) invert(1) drop-shadow(0 0 12px #00eaff); transform: scale(1.08); }
-
     /* ====== دکمه تغییر نام ====== */
     .edit-name-btn {
         background: none;
@@ -350,6 +353,17 @@
         color: #fff;
     }
 
+    /* ====== استایل منو ====== */
+    .home-icon {
+        display: flex; flex-direction: column; align-items: center;
+        text-align: center; color: rgba(255,255,255,0.8);
+        transition: 0.3s; gap: 4px; text-decoration: none;
+    }
+    .home-icon img { width: 44px; height: 44px; filter: brightness(0) invert(1); transition: 0.3s; object-fit: contain; }
+    .home-icon span { font-size: 12px; font-weight: 700; line-height: 1.4; font-family: 'Vazirmatn', 'Tahoma', sans-serif; }
+    .home-icon:hover { color: #00eaff; transform: translateY(-3px); }
+    .home-icon:hover img { filter: brightness(0) invert(1) drop-shadow(0 0 12px #00eaff); transform: scale(1.08); }
+
     @media (max-width: 768px) {
         .profile-header { flex-direction: column; text-align: center; justify-content: center; }
         .profile-stats { grid-template-columns: repeat(2, 1fr); }
@@ -358,6 +372,7 @@
         .home-icon span { font-size: 11px; }
         .modal-box { padding: 25px; }
         .crop-container { max-height: 300px; }
+        .profile-info .phone-display { justify-content: center; }
     }
     @media (max-width: 480px) {
         .home-icon img { width: 28px; height: 28px; }
@@ -424,6 +439,9 @@
             <div class="profile-info">
                 <h2 id="profileUsername">کاربر</h2>
                 <p id="profileCreated">عضو از: تاریخ</p>
+                <div class="phone-display">
+                    📱 شماره تلفن: <span id="profilePhone">ثبت نشده</span>
+                </div>
                 <button class="edit-name-btn" onclick="openEditUsernameModal()">✏️ تغییر نام کاربری</button>
             </div>
         </div>
@@ -642,6 +660,13 @@ function loadProfile() {
     
     document.getElementById('profileUsername').textContent = user.username;
     document.getElementById('profileCreated').textContent = 'عضو از: ' + (user.created || 'تاریخ نامشخص');
+    
+    // ✅ نمایش شماره تلفن
+    if (user.phone) {
+        document.getElementById('profilePhone').textContent = user.phone;
+    } else {
+        document.getElementById('profilePhone').textContent = 'ثبت نشده';
+    }
     
     if (user.profileImage && user.profileImage.startsWith('data:image')) {
         document.getElementById('profileAvatar').src = user.profileImage;
