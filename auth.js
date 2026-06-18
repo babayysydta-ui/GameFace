@@ -1,5 +1,5 @@
 // ============================================================
-// auth.js - سیستم احراز هویت (نسخه کامل با تغییر نام)
+// auth.js - سیستم احراز هویت کامل با بازیابی رمز
 // ============================================================
 
 const JSONBIN_API_KEY = '$2a$10$xuP.N/WOhZAUMRqw3JT4LepOUGFnjnIe5YmSVmy9vl0aIbGntjhwu';
@@ -7,9 +7,10 @@ const JSONBIN_BIN_ID = '6a326295da38895dfecefc50';
 
 let currentUser = null;
 const loginAttempts = {};
+const resetCodes = {};
 
 // ============================================================
-// ====== تابع ساده هش کردن ======
+// ====== تابع هش کردن ======
 // ============================================================
 
 function simpleHash(str) {
@@ -102,10 +103,10 @@ function isLoggedIn() {
 }
 
 // ============================================================
-// ====== ثبت‌نام ======
+// ====== ثبت‌نام با شماره تلفن ======
 // ============================================================
 
-async function registerUser(username, password) {
+async function registerUser(username, password, phone) {
     try {
         if (!username || username.length < 3) {
             return { success: false, message: '⚠️ نام کاربری حداقل ۳ کاراکتر باشد!' };
@@ -115,17 +116,28 @@ async function registerUser(username, password) {
             return { success: false, message: '⚠️ رمز عبور حداقل ۴ کاراکتر باشد!' };
         }
         
+        if (!phone || !/^09[0-9]{9}$/.test(phone)) {
+            return { success: false, message: '⚠️ شماره تلفن معتبر نیست! (مثال: 09123456789)' };
+        }
+        
         const users = await getUsers();
         
         if (users[username]) {
             return { success: false, message: '⚠️ این نام کاربری قبلاً ثبت شده است!' };
         }
         
+        // بررسی شماره تلفن تکراری
+        for (const [key, value] of Object.entries(users)) {
+            if (value.phone === phone) {
+                return { success: false, message: '⚠️ این شماره تلفن قبلاً ثبت شده است!' };
+            }
+        }
+        
         const hashedPassword = simpleHash(password);
-        console.log('🔐 رمز هش شد:', hashedPassword);
         
         users[username] = {
             password: hashedPassword,
+            phone: phone,
             created: new Date().toLocaleString('fa-IR'),
             likedVideos: [],
             likedMods: [],
@@ -141,6 +153,7 @@ async function registerUser(username, password) {
         
         setCurrentUser({
             username: username,
+            phone: phone,
             created: users[username].created,
             likedVideos: [],
             likedMods: [],
@@ -173,8 +186,6 @@ async function loginUser(username, password) {
         }
         
         const hashedInput = simpleHash(password);
-        console.log('🔐 رمز وارد شده هش شد:', hashedInput);
-        console.log('🔐 رمز ذخیره شده:', users[username].password);
         
         if (users[username].password !== hashedInput) {
             return { success: false, message: '❌ نام کاربری یا رمز عبور اشتباه است!' };
@@ -182,6 +193,7 @@ async function loginUser(username, password) {
         
         setCurrentUser({
             username: username,
+            phone: users[username].phone || '',
             created: users[username].created,
             likedVideos: users[username].likedVideos || [],
             likedMods: users[username].likedMods || [],
@@ -235,7 +247,7 @@ async function changePassword(oldPassword, newPassword) {
 }
 
 // ============================================================
-// ====== ✅ جدید: تغییر نام کاربری ======
+// ====== تغییر نام کاربری ======
 // ============================================================
 
 async function changeUsername(newUsername) {
@@ -249,7 +261,6 @@ async function changeUsername(newUsername) {
             return { success: false, message: '⚠️ نام کاربری حداقل ۳ کاراکتر باشد!' };
         }
         
-        // فقط حروف و اعداد
         const safeUser = newUsername.replace(/[^a-zA-Z0-9_\u0600-\u06FF]/g, '');
         if (safeUser !== newUsername) {
             return { success: false, message: '⚠️ نام کاربری فقط شامل حروف و اعداد باشد!' };
@@ -257,12 +268,10 @@ async function changeUsername(newUsername) {
         
         const users = await getUsers();
         
-        // بررسی اینکه نام جدید توسط کس دیگه استفاده نشده
         if (users[newUsername] && newUsername !== user.username) {
             return { success: false, message: '⚠️ این نام کاربری قبلاً ثبت شده است!' };
         }
         
-        // انتقال داده‌ها به نام جدید
         const userData = users[user.username];
         delete users[user.username];
         users[newUsername] = userData;
@@ -272,7 +281,6 @@ async function changeUsername(newUsername) {
             return { success: false, message: 'خطا در تغییر نام!' };
         }
         
-        // به‌روزرسانی کاربر فعلی
         user.username = newUsername;
         setCurrentUser(user);
         
@@ -351,6 +359,110 @@ async function updateProfileImage(imageData) {
     } catch (error) {
         console.error('Update profile error:', error);
         return { success: false, message: '❌ خطا در ارتباط با سرور!' };
+    }
+}
+
+// ============================================================
+// ====== سیستم بازیابی رمز ======
+// ============================================================
+
+function generateResetCode() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+async function requestPasswordReset(phone) {
+    try {
+        const users = await getUsers();
+        
+        let foundUsername = null;
+        for (const [username, data] of Object.entries(users)) {
+            if (data.phone === phone) {
+                foundUsername = username;
+                break;
+            }
+        }
+        
+        if (!foundUsername) {
+            return { success: false, message: '❌ این شماره تلفن در سیستم ثبت نشده است!' };
+        }
+        
+        const code = generateResetCode();
+        
+        resetCodes[phone] = {
+            code: code,
+            username: foundUsername,
+            expires: Date.now() + 5 * 60 * 1000
+        };
+        
+        console.log(`📱 کد تایید برای ${phone}: ${code}`);
+        
+        return { 
+            success: true, 
+            message: '✅ کد تایید ارسال شد!',
+            code: code
+        };
+    } catch (error) {
+        console.error('Request reset error:', error);
+        return { success: false, message: '❌ خطا در ارسال کد!' };
+    }
+}
+
+async function verifyResetCode(phone, code) {
+    try {
+        const resetData = resetCodes[phone];
+        
+        if (!resetData) {
+            return { success: false, message: '❌ کد منقضی شده یا وجود ندارد!' };
+        }
+        
+        if (Date.now() > resetData.expires) {
+            delete resetCodes[phone];
+            return { success: false, message: '❌ کد منقضی شده است!' };
+        }
+        
+        if (resetData.code !== code) {
+            return { success: false, message: '❌ کد وارد شده اشتباه است!' };
+        }
+        
+        return { 
+            success: true, 
+            message: '✅ کد تایید شد!',
+            username: resetData.username
+        };
+    } catch (error) {
+        console.error('Verify code error:', error);
+        return { success: false, message: '❌ خطا در تایید کد!' };
+    }
+}
+
+async function resetPassword(phone, code, newPassword) {
+    try {
+        const verifyResult = await verifyResetCode(phone, code);
+        if (!verifyResult.success) {
+            return verifyResult;
+        }
+        
+        const username = verifyResult.username;
+        
+        if (!newPassword || newPassword.length < 4) {
+            return { success: false, message: '⚠️ رمز جدید حداقل ۴ کاراکتر باشد!' };
+        }
+        
+        const users = await getUsers();
+        const hashedNew = simpleHash(newPassword);
+        users[username].password = hashedNew;
+        
+        const saved = await saveUsers(users);
+        if (!saved) {
+            return { success: false, message: 'خطا در تغییر رمز!' };
+        }
+        
+        delete resetCodes[phone];
+        
+        return { success: true, message: '✅ رمز عبور با موفقیت تغییر کرد!' };
+    } catch (error) {
+        console.error('Reset password error:', error);
+        return { success: false, message: '❌ خطا در تغییر رمز!' };
     }
 }
 
@@ -494,6 +606,7 @@ function getUserStats() {
     
     return {
         username: user.username,
+        phone: user.phone || '',
         created: user.created,
         likedVideos: user.likedVideos || [],
         likedMods: user.likedMods || [],
@@ -507,7 +620,7 @@ function getUserStats() {
 }
 
 // ============================================================
-// ====== به‌روزرسانی هدر ======
+// ====== هدر ======
 // ============================================================
 
 function updateAuthUI() {
@@ -550,6 +663,10 @@ function updateAuthUI() {
                     <a href="profile.html" class="menu-item">
                         <span class="icon">🔒</span>
                         تغییر رمز عبور
+                    </a>
+                    <a href="forgot-password.html" class="menu-item">
+                        <span class="icon">🔑</span>
+                        بازیابی رمز
                     </a>
                     <a href="profile.html" class="menu-item">
                         <span class="icon">❤️</span>
@@ -614,7 +731,7 @@ window.GameFaceAuth = {
     registerUser,
     loginUser,
     changePassword,
-    changeUsername,  // ✅ جدید
+    changeUsername,
     updateProfileImage,
     compressImage,
     toggleLikeVideo,
@@ -622,5 +739,8 @@ window.GameFaceAuth = {
     watchVideo,
     downloadVideo,
     getUserStats,
-    updateAuthUI
+    updateAuthUI,
+    requestPasswordReset,
+    verifyResetCode,
+    resetPassword
 };
