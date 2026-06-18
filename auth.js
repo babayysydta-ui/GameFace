@@ -103,7 +103,7 @@ function isLoggedIn() {
 }
 
 // ============================================================
-// ====== ✅ کد امنیتی تصویری (نسخه اصلاح شده) ======
+// ====== ✅ کد امنیتی تصویری ======
 // ============================================================
 
 function generateCaptcha() {
@@ -131,12 +131,12 @@ function drawCaptchaOnCanvas(canvas, code) {
     
     const ctx = canvas.getContext('2d');
     const width = 200;
-    const height = 65;
+    const height = 60;
     
     canvas.width = width;
     canvas.height = height;
     
-    // ====== پس‌زمینه روشن ======
+    // پس‌زمینه روشن
     const gradient = ctx.createLinearGradient(0, 0, width, height);
     gradient.addColorStop(0, '#e8ecf1');
     gradient.addColorStop(0.5, '#f5f7fa');
@@ -144,7 +144,7 @@ function drawCaptchaOnCanvas(canvas, code) {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
     
-    // ====== خطوط نویز ======
+    // خطوط نویز
     for (let i = 0; i < 12; i++) {
         ctx.beginPath();
         ctx.moveTo(Math.random() * width, Math.random() * height);
@@ -154,7 +154,7 @@ function drawCaptchaOnCanvas(canvas, code) {
         ctx.stroke();
     }
     
-    // ====== نقطه‌های نویز ======
+    // نقطه‌های نویز
     for (let i = 0; i < 100; i++) {
         ctx.fillStyle = `rgba(40, 40, 80, ${0.05 + Math.random() * 0.15})`;
         ctx.beginPath();
@@ -162,17 +162,16 @@ function drawCaptchaOnCanvas(canvas, code) {
         ctx.fill();
     }
     
-    // ====== نوشتن اعداد ======
+    // نوشتن اعداد
     const chars = code.split('');
     const totalWidth = chars.length * 34;
     const startX = (width - totalWidth) / 2 + 10;
     
-    // رنگ‌های تیره و مشخص
     const colors = ['#1a1a2e', '#16213e', '#0f3460', '#2d1b69', '#4a1a6b', '#1b263b', '#3a0ca3', '#4361ee'];
     
     chars.forEach((char, index) => {
         const x = startX + index * 34 + Math.random() * 6;
-        const y = 28 + Math.random() * 25;
+        const y = 26 + Math.random() * 22;
         const rotation = (Math.random() - 0.5) * 0.5;
         const fontSize = 26 + Math.random() * 12;
         
@@ -190,7 +189,6 @@ function drawCaptchaOnCanvas(canvas, code) {
         ctx.textBaseline = 'middle';
         ctx.fillText(char, 0, 0);
         
-        // خط زیر هر عدد
         ctx.shadowBlur = 0;
         ctx.strokeStyle = `rgba(40, 40, 80, 0.1)`;
         ctx.lineWidth = 0.8;
@@ -202,7 +200,7 @@ function drawCaptchaOnCanvas(canvas, code) {
         ctx.restore();
     });
     
-    // ====== خطوط اعوجاج ======
+    // خطوط اعوجاج
     for (let i = 0; i < 6; i++) {
         ctx.beginPath();
         const startX2 = 5 + Math.random() * (width - 10);
@@ -219,7 +217,7 @@ function drawCaptchaOnCanvas(canvas, code) {
         ctx.stroke();
     }
     
-    // ====== حاشیه ======
+    // حاشیه
     ctx.strokeStyle = 'rgba(124,92,255,0.15)';
     ctx.lineWidth = 1.5;
     ctx.strokeRect(2, 2, width - 4, height - 4);
@@ -232,7 +230,7 @@ function refreshCaptcha() {
         drawCaptchaOnCanvas(canvas, code);
     }
     window.currentCaptcha = code;
-    console.log('🔐 کد امنیتی:', code);
+    console.log('🔐 کد امنیتی ورود:', code);
     return code;
 }
 
@@ -243,7 +241,7 @@ function refreshCaptcha2() {
         drawCaptchaOnCanvas(canvas, code);
     }
     window.currentCaptcha2 = code;
-    console.log('🔐 کد امنیتی ۲:', code);
+    console.log('🔐 کد امنیتی ثبت‌نام:', code);
     return code;
 }
 
@@ -253,6 +251,10 @@ function refreshCaptcha2() {
 
 async function registerUser(username, password, captcha) {
     try {
+        console.log('📝 ثبت‌نام جدید...');
+        console.log('🔐 کد وارد شده:', captcha);
+        console.log('🔐 کد صحیح:', window.currentCaptcha2);
+        
         // ====== بررسی کد امنیتی ======
         if (!captcha || captcha !== window.currentCaptcha2) {
             return { success: false, message: '⚠️ کد امنیتی اشتباه است!', refresh: true };
@@ -286,7 +288,7 @@ async function registerUser(username, password, captcha) {
         
         const saved = await saveUsers(users);
         if (!saved) {
-            return { success: false, message: '❌ خطا در ثبت‌نام! دوباره تلاش کن.' };
+            return { success: false, message: '❌ خطا در ذخیره اطلاعات!' };
         }
         
         setCurrentUser({
@@ -299,13 +301,12 @@ async function registerUser(username, password, captcha) {
             profileImage: ''
         });
         
-        // پاک کردن کد امنیتی بعد از موفقیت
         window.currentCaptcha2 = null;
         
         return { success: true, message: '✅ ثبت‌نام موفق! خوش اومدی 🎮' };
     } catch (error) {
-        console.error('Register error:', error);
-        return { success: false, message: '❌ خطا در ارتباط با سرور!' };
+        console.error('❌ Register error:', error);
+        return { success: false, message: '❌ خطا در ارتباط با سرور!', refresh: true };
     }
 }
 
@@ -315,6 +316,10 @@ async function registerUser(username, password, captcha) {
 
 async function loginUser(username, password, captcha) {
     try {
+        console.log('🔑 ورود کاربر...');
+        console.log('🔐 کد وارد شده:', captcha);
+        console.log('🔐 کد صحیح:', window.currentCaptcha);
+        
         // ====== بررسی کد امنیتی ======
         if (!captcha || captcha !== window.currentCaptcha) {
             return { success: false, message: '⚠️ کد امنیتی اشتباه است!', refresh: true };
@@ -346,18 +351,17 @@ async function loginUser(username, password, captcha) {
             profileImage: users[username].profileImage || ''
         });
         
-        // پاک کردن کد امنیتی بعد از موفقیت
         window.currentCaptcha = null;
         
         return { success: true, message: '✅ ورود موفق! خوش اومدی 🎮' };
     } catch (error) {
-        console.error('Login error:', error);
-        return { success: false, message: '❌ خطا در ارتباط با سرور!' };
+        console.error('❌ Login error:', error);
+        return { success: false, message: '❌ خطا در ارتباط با سرور!', refresh: true };
     }
 }
 
 // ============================================================
-// ====== تغییر رمز و نام کاربری ======
+// ====== بقیه توابع ======
 // ============================================================
 
 async function changePassword(oldPassword, newPassword) {
@@ -853,6 +857,16 @@ document.addEventListener('click', function(e) {
 
 document.addEventListener('DOMContentLoaded', function() {
     updateAuthUI();
+    
+    // تازه کردن کد امنیتی
+    setTimeout(() => {
+        if (document.getElementById('captchaCanvas')) {
+            refreshCaptcha();
+        }
+        if (document.getElementById('captchaCanvas2')) {
+            refreshCaptcha2();
+        }
+    }, 300);
 });
 
 // ============================================================
