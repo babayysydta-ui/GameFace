@@ -43,9 +43,73 @@
         .auth-footer { text-align: center; color: rgba(255,255,255,0.3); font-size: 13px; margin-top: 22px; }
         .auth-footer a { color: #00eaff; text-decoration: none; font-weight: 600; transition: 0.3s; }
         .auth-footer a:hover { text-decoration: underline; }
-        .auth-footer .forgot-link { display: block; margin-top: 12px; color: rgba(255,255,255,0.3); font-size: 13px; }
-        .auth-footer .forgot-link a { color: #ffd700; }
-        .auth-footer .forgot-link a:hover { color: #ff6b6b; }
+
+        /* ====== کد امنیتی ====== */
+        .captcha-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 8px;
+            border: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .captcha-container canvas {
+            border-radius: 8px;
+            background: #0a0c14;
+            height: 50px;
+            flex: 1;
+            min-width: 120px;
+            cursor: pointer;
+        }
+        .captcha-container .captcha-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .captcha-container .refresh-btn {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.4);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 18px;
+            font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+        }
+        .captcha-container .refresh-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border-color: rgba(124,92,255,0.3);
+        }
+        .captcha-container .captcha-input {
+            flex: 1;
+            min-width: 80px;
+        }
+        .captcha-container .captcha-input input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.04);
+            color: #fff;
+            font-size: 16px;
+            font-family: inherit;
+            text-align: center;
+            letter-spacing: 4px;
+            direction: ltr;
+        }
+        .captcha-container .captcha-input input:focus {
+            outline: none;
+            border-color: #7c5cff;
+        }
+        .captcha-container .captcha-input input::placeholder {
+            color: rgba(255,255,255,0.15);
+            letter-spacing: 0;
+        }
 
         .home-icon { display: flex; flex-direction: column; align-items: center; text-align: center; color: rgba(255,255,255,0.8); transition: 0.3s; gap: 4px; text-decoration: none; }
         .home-icon img { width: 44px; height: 44px; filter: brightness(0) invert(1); transition: 0.3s; object-fit: contain; }
@@ -53,7 +117,7 @@
         .home-icon:hover { color: #00eaff; transform: translateY(-3px); }
         .home-icon:hover img { filter: brightness(0) invert(1) drop-shadow(0 0 12px #00eaff); transform: scale(1.08); }
 
-        @media (max-width: 480px) { .auth-box { padding: 25px 18px; } .auth-box h2 { font-size: 22px; } .form-group .input-wrap input { padding: 12px 14px; padding-left: 44px; font-size: 14px; } .home-icon img { width: 28px; height: 28px; } .home-icon span { font-size: 10px; } }
+        @media (max-width: 480px) { .auth-box { padding: 25px 18px; } .auth-box h2 { font-size: 22px; } .form-group .input-wrap input { padding: 12px 14px; padding-left: 44px; font-size: 14px; } .home-icon img { width: 28px; height: 28px; } .home-icon span { font-size: 10px; } .captcha-container { flex-direction: column; align-items: stretch; } .captcha-container canvas { height: 40px; } }
         @media (max-width: 768px) { .auth-page { padding: 30px 15px 50px; } .home-icon img { width: 32px; height: 32px; } .home-icon span { font-size: 11px; } }
     </style>
 </head>
@@ -121,24 +185,30 @@
                 <button class="toggle-pass" onclick="togglePass('loginPass', this)" type="button">👁️</button>
             </div>
 
+            <!-- ====== کد امنیتی ====== -->
+            <label>🔐 کد امنیتی</label>
+            <div class="captcha-container">
+                <canvas id="captchaCanvas" onclick="refreshCaptcha()"></canvas>
+                <div class="captcha-actions">
+                    <button class="refresh-btn" onclick="refreshCaptcha()" title="تازه کردن کد">🔄</button>
+                </div>
+                <div class="captcha-input">
+                    <input type="text" id="captchaInput" placeholder="کد" maxlength="6" autocomplete="off" dir="ltr">
+                </div>
+            </div>
+
             <button class="auth-btn" id="loginBtn" onclick="handleLogin()">
                 <span class="spinner"></span>
                 <span class="btn-text">🚀 ورود به GameFace</span>
             </button>
         </div>
 
-        <!-- ====== فرم ثبت‌نام با شماره تلفن ====== -->
+        <!-- ====== فرم ثبت‌نام ====== -->
         <div class="form-group" id="registerForm">
             <label>👤 نام کاربری</label>
             <div class="input-wrap">
                 <input type="text" id="regUser" placeholder="حداقل ۳ کاراکتر" autocomplete="username">
                 <span class="input-icon">👤</span>
-            </div>
-
-            <label>📱 شماره تلفن</label>
-            <div class="input-wrap">
-                <input type="tel" id="regPhone" placeholder="مثال: 09123456789" maxlength="11">
-                <span class="input-icon">📱</span>
             </div>
 
             <label>🔒 رمز عبور</label>
@@ -153,20 +223,26 @@
                 <button class="toggle-pass" onclick="togglePass('regPass2', this)" type="button">👁️</button>
             </div>
 
+            <!-- ====== کد امنیتی ====== -->
+            <label>🔐 کد امنیتی</label>
+            <div class="captcha-container">
+                <canvas id="captchaCanvas2" onclick="refreshCaptcha2()"></canvas>
+                <div class="captcha-actions">
+                    <button class="refresh-btn" onclick="refreshCaptcha2()" title="تازه کردن کد">🔄</button>
+                </div>
+                <div class="captcha-input">
+                    <input type="text" id="captchaInput2" placeholder="کد" maxlength="6" autocomplete="off" dir="ltr">
+                </div>
+            </div>
+
             <button class="auth-btn" id="registerBtn" onclick="handleRegister()">
                 <span class="spinner"></span>
                 <span class="btn-text">✅ ثبت‌نام در GameFace</span>
             </button>
-            <p style="text-align:center;color:rgba(255,255,255,0.15);font-size:11px;margin-top:8px;">
-                📱 شماره تلفن برای بازیابی رمز استفاده می‌شود
-            </p>
         </div>
 
         <div class="auth-footer">
             با ورود یا ثبت‌نام، <a href="#">قوانین</a> را می‌پذیرید.
-            <div class="forgot-link">
-                🔑 <a href="forgot-password.html">رمز عبور خود را فراموش کرده‌اید؟</a>
-            </div>
         </div>
     </div>
 </section>
@@ -209,7 +285,36 @@
 
 <script>
 // ============================================================
-// ====== توابع صفحه ورود ======
+// ====== متغیرها ======
+// ============================================================
+
+let captchaCode = '';
+let captchaCode2 = '';
+
+// ============================================================
+// ====== توابع کد امنیتی ======
+// ============================================================
+
+function refreshCaptcha() {
+    const code = GameFaceAuth.refreshCaptcha();
+    if (code) {
+        captchaCode = code;
+        document.getElementById('captchaInput').value = '';
+        document.getElementById('captchaInput').focus();
+    }
+}
+
+function refreshCaptcha2() {
+    const code = GameFaceAuth.refreshCaptcha();
+    if (code) {
+        captchaCode2 = code;
+        document.getElementById('captchaInput2').value = '';
+        document.getElementById('captchaInput2').focus();
+    }
+}
+
+// ============================================================
+// ====== نمایش پیام ======
 // ============================================================
 
 function showMessage(text, type) {
@@ -224,6 +329,13 @@ function switchTab(tab) {
     document.getElementById(tab + 'Form').classList.add('active');
     document.querySelector(`.tab-switch button[data-tab="${tab}"]`).classList.add('active');
     document.getElementById('formMessage').className = 'form-message';
+    
+    // تازه کردن کد امنیتی هنگام تغییر تب
+    if (tab === 'login') {
+        refreshCaptcha();
+    } else {
+        refreshCaptcha2();
+    }
 }
 
 function togglePass(inputId, btn) {
@@ -238,28 +350,23 @@ function togglePass(inputId, btn) {
 }
 
 // ============================================================
-// ====== ثبت‌نام با شماره تلفن ======
+// ====== ثبت‌نام ======
 // ============================================================
 
 async function handleRegister() {
     const user = document.getElementById('regUser').value.trim();
-    const phone = document.getElementById('regPhone').value.trim();
     const pass = document.getElementById('regPass').value.trim();
     const pass2 = document.getElementById('regPass2').value.trim();
+    const captcha = document.getElementById('captchaInput2').value.trim();
     const btn = document.getElementById('registerBtn');
 
-    if (!user || !pass || !pass2 || !phone) {
+    if (!user || !pass || !pass2) {
         showMessage('⚠️ لطفاً همه فیلدها را پر کن!', 'error');
         return;
     }
 
     if (user.length < 3) {
         showMessage('⚠️ نام کاربری حداقل ۳ کاراکتر باشد!', 'error');
-        return;
-    }
-
-    if (!/^09[0-9]{9}$/.test(phone)) {
-        showMessage('⚠️ شماره تلفن معتبر نیست! (مثال: 09123456789)', 'error');
         return;
     }
 
@@ -282,7 +389,7 @@ async function handleRegister() {
             setTimeout(() => reject(new Error('timeout')), 10000);
         });
 
-        const registerPromise = GameFaceAuth.registerUser(user, pass, phone);
+        const registerPromise = GameFaceAuth.registerUser(user, pass, captcha);
         const result = await Promise.race([registerPromise, timeoutPromise]);
 
         if (result.success) {
@@ -296,6 +403,10 @@ async function handleRegister() {
             showMessage(result.message, 'error');
             btn.classList.remove('loading');
             btn.disabled = false;
+            // اگر کد امنیتی اشتباه بود، تازه کن
+            if (result.refresh) {
+                refreshCaptcha2();
+            }
         }
     } catch (error) {
         if (error.message === 'timeout') {
@@ -315,6 +426,7 @@ async function handleRegister() {
 async function handleLogin() {
     const user = document.getElementById('loginUser').value.trim();
     const pass = document.getElementById('loginPass').value.trim();
+    const captcha = document.getElementById('captchaInput').value.trim();
     const btn = document.getElementById('loginBtn');
 
     if (!user || !pass) {
@@ -331,7 +443,7 @@ async function handleLogin() {
             setTimeout(() => reject(new Error('timeout')), 10000);
         });
 
-        const loginPromise = GameFaceAuth.loginUser(user, pass);
+        const loginPromise = GameFaceAuth.loginUser(user, pass, captcha);
         const result = await Promise.race([loginPromise, timeoutPromise]);
 
         if (result.success) {
@@ -345,6 +457,9 @@ async function handleLogin() {
             showMessage(result.message, 'error');
             btn.classList.remove('loading');
             btn.disabled = false;
+            if (result.refresh) {
+                refreshCaptcha();
+            }
         }
     } catch (error) {
         if (error.message === 'timeout') {
@@ -409,6 +524,16 @@ function drawParticles() {
     requestAnimationFrame(drawParticles);
 }
 drawParticles();
+
+// ============================================================
+// ====== اجرای اولیه ======
+// ============================================================
+
+// تازه کردن کد امنیتی در هر دو فرم
+setTimeout(() => {
+    refreshCaptcha();
+    refreshCaptcha2();
+}, 300);
 </script>
 
 </body>
